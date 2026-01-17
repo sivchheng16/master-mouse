@@ -125,7 +125,7 @@ export const WhackMole: React.FC<{ onComplete: () => void; goal?: number; speed?
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-emerald-200 text-center transform scale-125">
             <h2 className="title-font text-5xl text-emerald-600 animate-bounce mb-4 uppercase">ឡូយណាស់!</h2>
             <p className="text-xl font-black text-emerald-900">ជុំបន្ទាប់នឹងលឿនជាងមុន! ⚡</p>
-            <div className="text-6xl mt-4">🐛💨</div>
+            <div className="text-6xl mt-4">🐞💨</div>
           </div>
         </div>
       )}

@@ -79,7 +79,6 @@ const MagicGarden: React.FC<MagicGardenProps> = ({ onComplete, count = 9 }) => {
           <div className="bg-white p-10 rounded-[3rem] shadow-2xl border-4 border-emerald-100 text-center">
             <h2 className="title-font text-4xl text-emerald-600 animate-bounce mb-2">សួនផ្កាដ៏ស្អាត!</h2>
             <p className="text-lg font-black text-emerald-800">ត្រៀមខ្លួនសម្រាប់ជុំបន្ទាប់... ✨</p>
-            <div className="text-6xl mt-4">🌸🌼🌻</div>
           </div>
         </div>
       )}

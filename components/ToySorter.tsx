@@ -51,10 +51,10 @@ const ToySorter: React.FC<ToySorterProps> = ({ onComplete, count = 3 }) => {
       const rect = containerRef.current.getBoundingClientRect();
       const clientX = e.clientX || (e.touches && e.touches[0].clientX);
       const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-      
+
       const x = ((clientX - rect.left) / rect.width) * 100;
       const y = ((clientY - rect.top) / rect.height) * 100;
-      
+
       setToys(prev => prev.map(t => (t.id === draggingId ? { ...t, x, y } : t)));
     }
   };
@@ -123,9 +123,9 @@ const ToySorter: React.FC<ToySorterProps> = ({ onComplete, count = 3 }) => {
           onTouchStart={() => handleStart(toy.id)}
           onMouseEnter={() => audioService.playHover()}
           className={`absolute cursor-grab active:cursor-grabbing text-4xl md:text-7xl transition-transform ${draggingId === toy.id ? 'scale-125 z-50' : 'hover:scale-110'}`}
-          style={{ 
-            left: `${toy.x}%`, 
-            top: `${toy.y}%`, 
+          style={{
+            left: `${toy.x}%`,
+            top: `${toy.y}%`,
             transform: `translate(-50%, -50%)`,
             transition: draggingId === toy.id ? 'none' : 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }}
@@ -139,7 +139,6 @@ const ToySorter: React.FC<ToySorterProps> = ({ onComplete, count = 3 }) => {
           <div className="bg-white p-10 rounded-[3rem] shadow-2xl border-4 border-orange-200 text-center">
             <h2 className="title-font text-4xl text-orange-600 animate-bounce mb-2">រៀបចំស្អាតហើយ!</h2>
             <p className="text-lg font-black text-orange-800">នៅមានរបស់លេងច្រើនទៀត... 🧸🚀</p>
-            <div className="text-6xl mt-4">📦✨</div>
           </div>
         </div>
       )}

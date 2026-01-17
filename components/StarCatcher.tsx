@@ -12,9 +12,9 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
   const initRound = (r: number) => {
     const rc = count + (r - 1) * 6;
     const newStars = Array.from({ length: rc }).map((_, i) => ({
-      id: i, 
-      x: Math.random() * 90 + 5, 
-      y: Math.random() * 70 + 15, 
+      id: i,
+      x: Math.random() * 90 + 5,
+      y: Math.random() * 70 + 15,
       caught: false
     }));
     setStars(newStars);
@@ -88,7 +88,7 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
   const currentCount = count + (round - 1) * 6;
 
   return (
-    <div 
+    <div
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -104,7 +104,7 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
       </div>
 
       {stars.map(s => (
-        <div 
+        <div
           key={`${round}-${s.id}`}
           className={`absolute text-2xl md:text-4xl transition-all duration-700 pointer-events-none ${s.caught ? 'scale-0 rotate-[360deg] opacity-0 blur-sm' : 'scale-100 opacity-100 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]'}`}
           style={{ left: `${s.x}%`, top: `${s.y}%` }}
@@ -114,7 +114,7 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
       ))}
 
       {selection && (
-        <div 
+        <div
           className="absolute border-4 border-yellow-400 bg-yellow-400/20 rounded-lg shadow-[0_0_20px_rgba(250,204,21,0.3)] pointer-events-none"
           style={{
             left: Math.min(selection.x1, selection.x2),
@@ -130,7 +130,6 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-indigo-200 text-center transform scale-125">
             <h2 className="title-font text-5xl text-indigo-600 animate-bounce mb-4 uppercase">អស្ចារ្យ!</h2>
             <p className="text-xl font-black text-indigo-900">ផ្កាយកំពុងធ្លាក់មកកាន់តែច្រើន! ✨🌌</p>
-            <div className="text-7xl mt-6">✨🌌🌟</div>
           </div>
         </div>
       )}

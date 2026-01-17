@@ -20,7 +20,6 @@ import { Flashlight } from './components/Flashlight';
 import { PatternMaster } from './components/PatternMaster';
 import { WaterRefill } from './components/WaterRefill';
 import { SoapBubbles } from './components/SoapBubbles';
-import PicturePuzzle from './components/PicturePuzzle';
 
 const LEVELS_PER_CHAPTER = 17;
 const TOTAL_LEVELS = 102;
@@ -35,13 +34,12 @@ const CHAPTER_THEMES = [
 ];
 
 const SidebarItem = ({ icon, label, active = false, onClick, colorClass = "" }: any) => (
-  <button 
+  <button
     onClick={onClick}
-    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold uppercase tracking-wider transition-all duration-200 border-2 ${
-      active 
-      ? 'bg-[#ddf4ff] border-[#84d8ff] text-[#1899d6]' 
+    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold uppercase tracking-wider transition-all duration-200 border-2 ${active
+      ? 'bg-[#ddf4ff] border-[#84d8ff] text-[#1899d6]'
       : `bg-transparent border-transparent text-[#777] hover:bg-[#f7f7f7] ${colorClass}`
-    }`}
+      }`}
   >
     <span className="text-2xl">{icon}</span>
     <span className="hidden lg:block text-sm">{label}</span>
@@ -56,7 +54,8 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>("តើកូនរួចរាល់សម្រាប់លេងឬនៅ?");
   const [loading, setLoading] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +66,7 @@ const App: React.FC = () => {
     if (savedCompleted) {
       try { setCompletedLevels(new Set(JSON.parse(savedCompleted))); } catch (e) { console.error(e); }
     }
-    
+
     if (savedLevelMap) {
       try { setLevelMap(JSON.parse(savedLevelMap)); } catch (e) { generateAndSaveLevelMap(); }
     } else {
@@ -75,6 +74,14 @@ const App: React.FC = () => {
     }
 
     if (!tutorialDone) setShowTutorial(true);
+
+    const handleOnlineStatus = () => setIsOnline(navigator.onLine);
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOnlineStatus);
+    return () => {
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOnlineStatus);
+    };
   }, []);
 
   useEffect(() => {
@@ -99,7 +106,7 @@ const App: React.FC = () => {
       const scrollTimer = setTimeout(() => {
         scrollToLevel(nextLevel);
       }, 150);
-      
+
       return () => clearTimeout(scrollTimer);
     }
   }, [currentLevel, loading, showTutorial, completedLevels]);
@@ -126,10 +133,10 @@ const App: React.FC = () => {
     const nextCompleted = new Set(completedLevels);
     nextCompleted.add(currentLevel);
     setCompletedLevels(nextCompleted);
-    
+
     setLoading(true);
     audioService.playSuccess();
-    
+
     getEncouragingMessage(`មេរៀនទី ${currentLevel}`).then(msg => {
       setMessage(msg);
       setLoading(false);
@@ -150,22 +157,22 @@ const App: React.FC = () => {
     // Rule: First lesson of ANY chapter is ALWAYS unlocked so kids can jump themes
     if (lvl === 1) return false;
     if ((lvl - 1) % LEVELS_PER_CHAPTER === 0) return false;
-    
+
     // Rule: Lessons within a chapter require the previous one to be completed
     return !completedLevels.has(lvl - 1);
   };
 
   const renderGame = () => {
     if (showTutorial) return (
-      <Tutorial 
-        onComplete={() => { 
-          setShowTutorial(false); 
-          localStorage.setItem('mouse_master_tutorial_v2', 'true'); 
-        }} 
-        onSkip={() => setShowTutorial(false)} 
+      <Tutorial
+        onComplete={() => {
+          setShowTutorial(false);
+          localStorage.setItem('mouse_master_tutorial_v2', 'true');
+        }}
+        onSkip={() => setShowTutorial(false)}
       />
     );
-    
+
     if (loading) return (
       <div className="fixed inset-0 z-[200] bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
         <div className="w-32 h-32 bg-[#ddf4ff] rounded-full flex items-center justify-center text-7xl animate-bounce mb-8 border-4 border-[#84d8ff]">🤖</div>
@@ -176,32 +183,32 @@ const App: React.FC = () => {
 
     const type = levelMap[currentLevel - 1];
     if (!type) return null;
-    
+
     const factor = 1 + (currentLevel / TOTAL_LEVELS);
 
     return (
-      <div className="fixed inset-0 z-[100] bg-white flex flex-col overflow-hidden">
-        <nav className="h-20 border-b-2 border-[#e5e5e5] flex items-center justify-between px-6 shrink-0 bg-white shadow-sm">
-          <button 
+      <div className="fixed inset-0 z-[100] bg-black flex flex-col overflow-hidden">
+        <nav className="h-16 border-b border-white/10 flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md">
+          <button
             onClick={() => setCurrentLevel(0)}
-            className="text-[#afafaf] hover:text-[#4b4b4b] transition-all hover:scale-110 active:scale-90"
+            className="text-white/60 hover:text-white transition-all hover:scale-110 active:scale-90"
           >
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
-          <div className="flex-1 px-12">
-            <div className="h-4 bg-[#e5e5e5] rounded-full overflow-hidden border-2 border-[#e5e5e5]">
-              <div 
-                className="h-full bg-[#58cc02] transition-all duration-700 ease-out" 
-                style={{ width: `${(currentLevel / TOTAL_LEVELS) * 100}%` }} 
+          <div className="flex-1 px-8 md:px-24">
+            <div className="h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
+              <div
+                className="h-full bg-[#58cc02] transition-all duration-700 ease-out shadow-[0_0_15px_rgba(88,204,2,0.5)]"
+                style={{ width: `${(currentLevel / TOTAL_LEVELS) * 100}%` }}
               />
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-[#fff4e5] px-4 py-2 rounded-2xl border-2 border-[#ffc800]/30">
-             <span className="text-2xl">💎</span>
-             <span className="text-[#ff9600] font-black text-xl">{completedLevels.size * 50}</span>
+          <div className="flex items-center gap-3 bg-white/5 px-4 py-1.5 rounded-xl border border-white/10 shadow-xl">
+            <span className="text-xl">💎</span>
+            <span className="text-white font-black text-lg">{completedLevels.size * 50}</span>
           </div>
         </nav>
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-h-0">
           {(() => {
             const props = { onComplete: handleLevelComplete, key: `game-${currentLevel}` };
             switch (type) {
@@ -243,13 +250,13 @@ const App: React.FC = () => {
           <SidebarItem icon="⚙️" label="កំណត់" onClick={() => setShowResetConfirm(true)} />
         </nav>
         <div className="mt-auto border-t-2 border-[#e5e5e5] pt-4 px-2">
-           <div className="flex items-center gap-3 bg-[#f7f7f7] p-3 rounded-2xl border-2 border-[#e5e5e5] group cursor-default">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-sm border border-[#e5e5e5] group-hover:scale-110 transition-transform">🤖</div>
-              <div className="hidden lg:block overflow-hidden">
-                <p className="text-[10px] font-black text-[#afafaf] uppercase tracking-widest leading-none mb-1">Botsky</p>
-                <p className="text-xs font-bold text-[#4b4b4b] truncate">{message}</p>
-              </div>
-           </div>
+          <div className="flex items-center gap-3 bg-[#f7f7f7] p-3 rounded-2xl border-2 border-[#e5e5e5] group cursor-default">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-sm border border-[#e5e5e5] group-hover:scale-110 transition-transform">🤖</div>
+            <div className="hidden lg:block overflow-hidden">
+              <p className="text-[10px] font-black text-[#afafaf] uppercase tracking-widest leading-none mb-1">Botsky</p>
+              <p className="text-xs font-bold text-[#4b4b4b] truncate">{message}</p>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -265,7 +272,7 @@ const App: React.FC = () => {
                       <h2 className="title-font text-2xl md:text-4xl leading-tight mb-2">{chapter.name}</h2>
                       <p className="font-bold text-white/90 text-sm md:text-base">{chapter.objective}</p>
                     </div>
-                    <button 
+                    <button
                       onClick={() => scrollToLevel(chapterIdx * LEVELS_PER_CHAPTER + 1)}
                       className="bg-white/20 hover:bg-white/30 p-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider transition-all border-b-4 border-black/20 shrink-0"
                     >
@@ -283,18 +290,18 @@ const App: React.FC = () => {
                     const windingOffset = Math.sin(i * 0.7) * 90;
 
                     return (
-                      <div 
-                        key={lvlNum} 
+                      <div
+                        key={lvlNum}
                         id={`level-button-${lvlNum}`}
-                        className="relative flex flex-col items-center group" 
+                        className="relative flex flex-col items-center group"
                         style={{ marginLeft: `${windingOffset}px` }}
                       >
                         {/* Tooltip - Always visible for Active level, otherwise on hover */}
                         <div className={`absolute bottom-full mb-4 transition-all duration-300 pointer-events-none scale-90 group-hover:scale-100 z-30 ${isActive ? 'opacity-100 scale-100 animate-float-level-tiny' : 'opacity-0 group-hover:opacity-100'}`}>
-                           <div className="bg-[#4b4b4b] text-white px-5 py-3 rounded-2xl text-xs font-black uppercase whitespace-nowrap shadow-2xl border-2 border-white/10">
-                             មេរៀនទី {lvlNum}
-                             <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[10px] border-x-transparent border-t-[10px] border-t-[#4b4b4b]" />
-                           </div>
+                          <div className="bg-[#4b4b4b] text-white px-5 py-3 rounded-2xl text-xs font-black uppercase whitespace-nowrap shadow-2xl border-2 border-white/10">
+                            មេរៀនទី {lvlNum}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[10px] border-x-transparent border-t-[10px] border-t-[#4b4b4b]" />
+                          </div>
                         </div>
 
                         <button
@@ -303,29 +310,28 @@ const App: React.FC = () => {
                             audioService.playGameStart();
                             setCurrentLevel(lvlNum);
                           }}
-                          className={`relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-all duration-300 border-b-[10px] active:border-b-0 active:translate-y-2 focus:outline-none ${
-                            isCompleted 
-                            ? 'bg-[#ffc800] border-[#e38600] text-white shadow-xl' 
+                          className={`relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-all duration-300 border-b-[10px] active:border-b-0 active:translate-y-2 focus:outline-none ${isCompleted
+                            ? 'bg-[#ffc800] border-[#e38600] text-white shadow-xl'
                             : isActive
                               ? `${chapter.color} ${chapter.border} text-white animate-bounce-active shadow-2xl ring-4 ring-offset-4 ring-sky-100`
                               : 'bg-[#e5e5e5] border-[#afafaf] text-[#afafaf] cursor-default'
-                          }`}
+                            }`}
                         >
                           <span className="text-4xl md:text-5xl drop-shadow-md">
                             {isCompleted ? '⭐' : isActive ? '🎯' : '🔒'}
                           </span>
-                          
+
                           {isActive && (
                             <div className="absolute -left-24 top-0 bot-float-side hidden sm:block pointer-events-none">
-                               <div className="bg-white px-4 py-2 rounded-2xl border-2 border-[#e5e5e5] shadow-lg relative mb-2">
-                                  <p className="text-[10px] font-black text-[#58cc02] uppercase tracking-wider">តោះលេង!</p>
-                                  <div className="absolute right-[-8px] top-1/2 -translate-y-1/2 border-y-8 border-y-transparent border-l-8 border-l-[#e5e5e5]" />
-                               </div>
-                               <div className="w-14 h-14 bg-[#ddf4ff] rounded-full border-2 border-[#84d8ff] flex items-center justify-center text-3xl shadow-md ml-auto animate-pulse">🤖</div>
+                              <div className="bg-white px-4 py-2 rounded-2xl border-2 border-[#e5e5e5] shadow-lg relative mb-2">
+                                <p className="text-[10px] font-black text-[#58cc02] uppercase tracking-wider">តោះលេង!</p>
+                                <div className="absolute right-[-8px] top-1/2 -translate-y-1/2 border-y-8 border-y-transparent border-l-8 border-l-[#e5e5e5]" />
+                              </div>
+                              <div className="w-14 h-14 bg-[#ddf4ff] rounded-full border-2 border-[#84d8ff] flex items-center justify-center text-3xl shadow-md ml-auto animate-pulse">🤖</div>
                             </div>
                           )}
                         </button>
-                        
+
                         <div className="mt-4 text-center">
                           <span className={`text-xs font-black uppercase tracking-[0.2em] transition-colors ${isLocked ? 'text-[#afafaf]' : chapter.text}`}>
                             {isCompleted ? 'ជោគជ័យ' : isActive ? 'ចាប់ផ្ដើម' : 'បិទជិត'}
@@ -339,7 +345,7 @@ const App: React.FC = () => {
             ))}
           </div>
         ) : null}
-        
+
         {renderGame()}
       </main>
 
@@ -367,95 +373,68 @@ const App: React.FC = () => {
         <div className="bg-white border-2 border-[#e5e5e5] p-6 rounded-3xl shadow-sm">
           <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest mb-5">ការរីកចម្រើនសរុប</h4>
           <div className="flex flex-col gap-4">
-             <div className="flex justify-between text-xs font-black text-[#afafaf] uppercase">
-                <span>មេរៀនសរុប</span>
-                <span className="text-[#4b4b4b]">{completedLevels.size}/{TOTAL_LEVELS}</span>
-             </div>
-             <div className="h-5 bg-[#e5e5e5] rounded-full overflow-hidden border-2 border-[#e5e5e5]">
-                <div 
-                  className="h-full bg-[#58cc02] transition-all duration-1000" 
-                  style={{ width: `${(completedLevels.size / TOTAL_LEVELS) * 100}%` }} 
-                />
-             </div>
-             <p className="text-[10px] font-bold text-[#afafaf] italic text-center">កូនកំពុងធ្វើបានយ៉ាងអស្ចារ្យ!</p>
+            <div className="flex justify-between text-xs font-black text-[#afafaf] uppercase">
+              <span>មេរៀនសរុប</span>
+              <span className="text-[#4b4b4b]">{completedLevels.size}/{TOTAL_LEVELS}</span>
+            </div>
+            <div className="h-5 bg-[#e5e5e5] rounded-full overflow-hidden border-2 border-[#e5e5e5]">
+              <div
+                className="h-full bg-[#58cc02] transition-all duration-1000"
+                style={{ width: `${(completedLevels.size / TOTAL_LEVELS) * 100}%` }}
+              />
+            </div>
+            <p className="text-[10px] font-bold text-[#afafaf] italic text-center">កូនកំពុងធ្វើបានយ៉ាងអស្ចារ្យ!</p>
           </div>
         </div>
 
         <div className="bg-white border-2 border-[#e5e5e5] p-6 rounded-3xl shadow-sm">
           <div className="flex justify-between items-center mb-6">
-             <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest">ចំណាត់ថ្នាក់</h4>
-             <button className="text-[#1cb0f6] font-black text-[10px] uppercase hover:underline">មើលទាំងអស់</button>
+            <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest">ចំណាត់ថ្នាក់</h4>
+            <button className="text-[#1cb0f6] font-black text-[10px] uppercase hover:underline">មើលទាំងអស់</button>
           </div>
           <div className="flex flex-col gap-5">
-             {[
-               { name: "កូនខ្លា", xp: 5250, icon: "🐯", me: false },
-               { name: "បងនាគ", xp: 4850, icon: "🐲", me: false },
-               { name: "អ្នក (You)", xp: completedLevels.size * 100, icon: "🤖", me: true }
-             ].sort((a,b) => b.xp - a.xp).map((user, i) => (
-               <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${user.me ? 'bg-[#ddf4ff] border-2 border-[#84d8ff]' : 'border-2 border-transparent hover:bg-gray-50'}`}>
-                  <span className={`font-black w-5 text-center ${i === 0 ? 'text-[#ffc800]' : 'text-[#afafaf]'}`}>{i + 1}</span>
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#e5e5e5] text-xl shadow-sm">{user.icon}</div>
-                  <div className="flex-1 overflow-hidden">
-                    <p className={`text-sm font-black truncate leading-none mb-1 ${user.me ? 'text-[#1899d6]' : 'text-[#4b4b4b]'}`}>{user.name}</p>
-                    <p className="text-[10px] text-[#afafaf] font-black uppercase tracking-wider">{user.xp} XP</p>
-                  </div>
-               </div>
-             ))}
+            {[
+              { name: "កូនខ្លា", xp: 5250, icon: "🐯", me: false },
+              { name: "បងនាគ", xp: 4850, icon: "🐲", me: false },
+              { name: "អ្នក (You)", xp: completedLevels.size * 100, icon: "🤖", me: true }
+            ].sort((a, b) => b.xp - a.xp).map((user, i) => (
+              <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${user.me ? 'bg-[#ddf4ff] border-2 border-[#84d8ff]' : 'border-2 border-transparent hover:bg-gray-50'}`}>
+                <span className={`font-black w-5 text-center ${i === 0 ? 'text-[#ffc800]' : 'text-[#afafaf]'}`}>{i + 1}</span>
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#e5e5e5] text-xl shadow-sm">{user.icon}</div>
+                <div className="flex-1 overflow-hidden">
+                  <p className={`text-sm font-black truncate leading-none mb-1 ${user.me ? 'text-[#1899d6]' : 'text-[#4b4b4b]'}`}>{user.name}</p>
+                  <p className="text-[10px] text-[#afafaf] font-black uppercase tracking-wider">{user.xp} XP</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </aside>
 
       {showResetConfirm && (
         <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
-           <div className="bg-white w-full max-md rounded-[3rem] p-8 text-center shadow-2xl border-b-8 border-[#e5e5e5] animate-in zoom-in duration-300">
-              <div className="text-7xl mb-6">⚙️</div>
-              <h2 className="title-font text-3xl text-[#4b4b4b] mb-4">កំណត់ឡើងវិញ?</h2>
-              <p className="font-bold text-[#777] mb-8 leading-relaxed">តើកូនចង់លុបការរីកចម្រើនទាំងអស់ ហើយចាប់ផ្ដើមមេរៀនពីដំបូងឡើងវិញមែនទេ?</p>
-              <div className="flex flex-col gap-3">
-                 <button 
-                  onClick={handleResetProgress}
-                  className="w-full bg-[#ff4b4b] hover:bg-[#d33131] text-white font-black py-4 rounded-2xl border-b-4 border-black/20 transition-all uppercase tracking-widest text-sm"
-                 >
-                   យល់ព្រម លុបវាចេញ
-                 </button>
-                 <button 
-                  onClick={() => setShowResetConfirm(false)}
-                  className="w-full bg-white hover:bg-gray-100 text-[#afafaf] font-black py-4 rounded-2xl border-2 border-[#e5e5e5] border-b-4 transition-all uppercase tracking-widest text-sm"
-                 >
-                   ទេ ទុកវាដដែល
-                 </button>
-              </div>
-           </div>
+          <div className="bg-white w-full max-md rounded-[3rem] p-8 text-center shadow-2xl border-b-8 border-[#e5e5e5] animate-in zoom-in duration-300">
+            <div className="text-7xl mb-6">⚙️</div>
+            <h2 className="title-font text-3xl text-[#4b4b4b] mb-4">កំណត់ឡើងវិញ?</h2>
+            <p className="font-bold text-[#777] mb-8 leading-relaxed">តើកូនចង់លុបការរីកចម្រើនទាំងអស់ ហើយចាប់ផ្ដើមមេរៀនពីដំបូងឡើងវិញមែនទេ?</p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleResetProgress}
+                className="w-full bg-[#ff4b4b] hover:bg-[#d33131] text-white font-black py-4 rounded-2xl border-b-4 border-black/20 transition-all uppercase tracking-widest text-sm"
+              >
+                យល់ព្រម លុបវាចេញ
+              </button>
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="w-full bg-white hover:bg-gray-100 text-[#afafaf] font-black py-4 rounded-2xl border-2 border-[#e5e5e5] border-b-4 transition-all uppercase tracking-widest text-sm"
+              >
+                ទេ ទុកវាដដែល
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-      <style>{`
-        @keyframes bounce-active {
-          0%, 100% { transform: translateY(0); box-shadow: 0 10px 0 rgba(0,0,0,0.1); }
-          50% { transform: translateY(-8px); box-shadow: 0 18px 0 rgba(0,0,0,0.05); }
-        }
-        .animate-bounce-active {
-          animation: bounce-active 2.5s ease-in-out infinite;
-        }
-        @keyframes float-level-tiny {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-5px) scale(1.02); }
-        }
-        .animate-float-level-tiny {
-          animation: float-level-tiny 3s ease-in-out infinite;
-        }
-        .bot-float-side {
-          animation: bot-float-side-anim 4s ease-in-out infinite;
-        }
-        @keyframes bot-float-side-anim {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-12px) rotate(3deg); }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; border: 3px solid #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #999; }
-      `}</style>
     </div>
   );
 };

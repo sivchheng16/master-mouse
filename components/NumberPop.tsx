@@ -144,7 +144,6 @@ export const NumberPop: React.FC<NumberPopProps> = ({ onComplete, total = 8 }) =
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-sky-200 text-center transform scale-125">
             <h2 className="title-font text-5xl text-sky-600 animate-bounce mb-4 uppercase">អស្ចារ្យ!</h2>
             <p className="text-xl font-black text-sky-900">ឡើងទៅជុំបន្ទាប់! ✨</p>
-            <div className="text-6xl mt-4">🔢🚀</div>
           </div>
         </div>
       )}

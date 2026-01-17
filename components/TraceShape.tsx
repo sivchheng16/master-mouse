@@ -83,7 +83,7 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
       audioService.playTing(traced.length);
       const nextTraced = [...traced, closestId];
       setTraced(nextTraced);
-      
+
       if (nextTraced.length === dots.length) {
         if (round < totalRounds) {
           handleRoundComplete();
@@ -123,7 +123,7 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
         </div>
       </div>
 
-      <div 
+      <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseMove}
@@ -131,11 +131,11 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
       >
         {/* Connection Path Guide */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100">
-          <path 
-            d={dots.map((d, i) => `${i === 0 ? 'M' : 'L'} ${d.x} ${d.y}`).join(' ') + (round === 1 || round === 3 ? ' Z' : '')} 
-            fill="none" 
-            stroke="orange" 
-            strokeWidth="0.5" 
+          <path
+            d={dots.map((d, i) => `${i === 0 ? 'M' : 'L'} ${d.x} ${d.y}`).join(' ') + (round === 1 || round === 3 ? ' Z' : '')}
+            fill="none"
+            stroke="orange"
+            strokeWidth="0.5"
             strokeDasharray="2 2"
           />
         </svg>
@@ -143,23 +143,22 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
         {dots.map(d => (
           <div
             key={`${round}-${d.id}`}
-            className={`absolute w-8 h-8 md:w-11 md:h-11 rounded-full transition-all duration-300 border-2 border-white shadow-md flex items-center justify-center ${
-              traced.includes(d.id) 
-                ? 'bg-orange-500 scale-110 z-10 shadow-orange-200' 
+            className={`absolute w-8 h-8 md:w-11 md:h-11 rounded-full transition-all duration-300 border-2 border-white shadow-md flex items-center justify-center ${traced.includes(d.id)
+                ? 'bg-orange-500 scale-110 z-10 shadow-orange-200'
                 : 'bg-orange-100 opacity-60 group-hover:opacity-100'
-            }`}
+              }`}
             style={{ left: `${d.x}%`, top: `${d.y}%`, transform: 'translate(-50%, -50%)' }}
           >
             {traced.includes(d.id) && (
-              <span className="text-white text-xs animate-in zoom-in">⭐</span>
+              <span className="text-white text-xs animate-in zoom-in"></span>
             )}
           </div>
         ))}
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-           <div className="text-7xl md:text-9xl opacity-[0.03] font-black text-orange-950 uppercase tracking-tighter rotate-12 select-none">
-              {shapeNames[round-1].split(' ')[0]}
-           </div>
+          <div className="text-7xl md:text-9xl opacity-[0.03] font-black text-orange-950 uppercase tracking-tighter rotate-12 select-none">
+            {shapeNames[round - 1].split(' ')[0]}
+          </div>
         </div>
       </div>
 
@@ -168,19 +167,18 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-orange-200 text-center transform scale-125">
             <h2 className="title-font text-5xl text-orange-600 animate-bounce mb-4 uppercase">អស្ចារ្យ!</h2>
             <p className="text-xl font-black text-orange-900">ត្រៀមខ្លួនសម្រាប់រូបរាងបន្ទាប់! ✨</p>
-            <div className="text-7xl mt-6">🎨✨</div>
           </div>
         </div>
       )}
 
       {round === totalRounds && traced.length === dots.length && !showLevelUp && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-md z-30 animate-in fade-in duration-500">
-           <div className="text-center">
-              <h2 className="title-font text-5xl md:text-8xl text-orange-600 animate-bounce drop-shadow-lg">ជោគជ័យ! 🏆</h2>
-              <div className="flex justify-center gap-4 mt-4 text-5xl">
-                <span>🌟</span><span>✨</span><span>🌟</span>
-              </div>
-           </div>
+          <div className="text-center">
+            <h2 className="title-font text-5xl md:text-7xl text-orange-600 animate-bounce drop-shadow-lg">ជោគជ័យ! 🏆</h2>
+            <div className="flex justify-center gap-4 mt-4 text-4xl">
+              <span>🏆</span><span>🏆</span><span>🏆</span>
+            </div>
+          </div>
         </div>
       )}
 

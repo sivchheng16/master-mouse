@@ -131,7 +131,6 @@ export const GemSorter: React.FC<{ onComplete: () => void; count?: number }> = (
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-pink-100 text-center transform scale-125">
             <h2 className="title-font text-5xl text-pink-600 animate-bounce mb-4 uppercase">អស្ចារ្យ!</h2>
             <p className="text-xl font-black text-pink-900">ត្បូងកាន់តែច្រើនទៀត! 🍎💎</p>
-            <div className="text-7xl mt-6">✨💎🍎</div>
           </div>
         </div>
       )}

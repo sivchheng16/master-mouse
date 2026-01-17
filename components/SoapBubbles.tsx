@@ -40,10 +40,10 @@ export const SoapBubbles: React.FC<{ onComplete: () => void; count?: number }> =
 
   const handlePop = (id: number) => {
     if (showLevelUp) return;
-    
+
     setBubbles(prev => prev.map(b => b.id === id ? { ...b, isPopping: true } : b));
     audioService.playBubble();
-    
+
     setTimeout(() => {
       setBubbles(prev => prev.filter(b => b.id !== id));
       setPopped(p => {
@@ -78,7 +78,7 @@ export const SoapBubbles: React.FC<{ onComplete: () => void; count?: number }> =
 
       <div className="absolute top-10 w-full text-center z-20">
         <div className="inline-block bg-white/90 backdrop-blur-md px-12 py-5 rounded-[2rem] border-2 border-sky-100 shadow-2xl">
-           <h2 className="text-2xl md:text-5xl font-black text-sky-900 tracking-tight">បំបែកពពុះសាប៊ូ! ({popped}/{currentRoundCount})</h2>
+          <h2 className="text-2xl md:text-5xl font-black text-sky-900 tracking-tight">បំបែកពពុះសាប៊ូ! ({popped}/{currentRoundCount})</h2>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export const SoapBubbles: React.FC<{ onComplete: () => void; count?: number }> =
               backdropFilter: 'blur(1px)'
             }}
           >
-             <div className="absolute top-[20%] left-[20%] w-[25%] h-[25%] bg-white/60 rounded-full blur-[2px]" />
+            <div className="absolute top-[20%] left-[20%] w-[25%] h-[25%] bg-white/60 rounded-full blur-[2px]" />
           </div>
         ))}
       </div>
@@ -110,8 +110,7 @@ export const SoapBubbles: React.FC<{ onComplete: () => void; count?: number }> =
         <div className="absolute inset-0 flex items-center justify-center bg-sky-950/40 backdrop-blur-md z-[100] animate-in fade-in zoom-in duration-500">
           <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-sky-200 text-center transform scale-125">
             <h2 className="title-font text-5xl text-sky-600 animate-bounce mb-4 uppercase">អស្ចារ្យ!</h2>
-            <p className="text-xl font-black text-sky-900">ត្រៀមខ្លួនសម្រាប់ពពុះសាប៊ូបន្ថែម! ✨🧼</p>
-            <div className="text-7xl mt-6">🫧✨🧼</div>
+            <p className="text-xl font-black text-sky-900">ត្រៀមខ្លួនសម្រាប់ពពុះសាប៊ូបន្ថែម! 🫧🧼</p>
           </div>
         </div>
       )}

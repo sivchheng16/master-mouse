@@ -66,6 +66,13 @@ const RainbowPath: React.FC<RainbowPathProps> = ({ onComplete, segments = 8 }) =
       </div>
 
       <div className="flex w-full max-w-5xl h-32 relative bg-white/30 rounded-full border-2 border-dashed border-indigo-200 overflow-hidden">
+        {visited.length === 0 && !showLevelUp && (
+          <div className="absolute inset-0 flex items-center justify-start pl-12 pointer-events-none animate-pulse">
+            <span className="text-indigo-300 font-black text-xl md:text-2xl uppercase tracking-[0.2em]">
+              ចាប់ផ្ដើមត្រង់នេះ...
+            </span>
+          </div>
+        )}
         {Array.from({ length: currentSegments }).map((_, i) => (
           <div
             key={i}
