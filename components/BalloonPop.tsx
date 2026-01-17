@@ -125,7 +125,7 @@ const BalloonPop: React.FC<BalloonPopProps> = ({ onComplete, count = 5 }) => {
   return (
     <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-[#4facfe] to-[#00f2fe] select-none">
       {/* Round Indicator - Larger */}
-      <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-white/40 shadow-lg">
+      <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-white/40 shadow-lg">
         <span className="text-white font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
 
@@ -152,9 +152,9 @@ const BalloonPop: React.FC<BalloonPopProps> = ({ onComplete, count = 5 }) => {
         ))}
       </div>
 
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center w-full">
-        <div className="inline-block bg-white/30 backdrop-blur-xl px-12 py-5 rounded-[2.5rem] border-2 border-white/50 shadow-2xl">
-           <h2 className="text-2xl md:text-5xl font-black text-white drop-shadow-lg">ចុចដើម្បីបំបែកប៉េងប៉ោង! ({poppedCount}/{currentRoundTotal})</h2>
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 text-center w-full">
+        <div className="inline-block bg-white/30 backdrop-blur-xl px-8 py-3 rounded-[2.5rem] border-2 border-white/50 shadow-2xl">
+           <h2 className="text-xl md:text-2xl font-black text-white drop-shadow-lg">ចុចដើម្បីបំបែកប៉េងប៉ោង! ({poppedCount}/{currentRoundTotal})</h2>
         </div>
       </div>
 

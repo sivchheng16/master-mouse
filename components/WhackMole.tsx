@@ -22,7 +22,7 @@ export const WhackMole: React.FC<{ onComplete: () => void; goal?: number; speed?
 
   useEffect(() => {
     if (showLevelUp) return;
-    
+
     const timer = setInterval(() => {
       setActive(prev => {
         let next;
@@ -59,10 +59,10 @@ export const WhackMole: React.FC<{ onComplete: () => void; goal?: number; speed?
       setWhacked(index);
       setActive(null);
       createBoom();
-      
+
       const newScore = score + 1;
       setScore(newScore);
-      
+
       if (newScore >= currentGoal) {
         if (round < totalRounds) {
           setTimeout(handleRoundComplete, 400);
@@ -87,6 +87,13 @@ export const WhackMole: React.FC<{ onComplete: () => void; goal?: number; speed?
 
   return (
     <div key={`whack-round-${round}`} className="relative w-full h-full bg-emerald-50/30 backdrop-blur-md flex flex-col items-center justify-center overflow-hidden p-2 md:p-4">
+
+      <div className="absolute top-4 w-full text-center z-20">
+        <div className="inline-block bg-emerald-100/80 backdrop-blur-md px-8 py-3 rounded-[2rem] border-2 border-emerald-300 shadow-2xl">
+          <h2 className="text-xl md:text-2xl font-black text-emerald-900 tracking-tight">ចុច​ឲ្យត្រូវលើសត្វល្អិត! ({score}/{currentGoal})</h2>
+        </div>
+      </div>
+
       <div className="absolute top-4 right-8 z-40 bg-emerald-100/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-emerald-300 shadow-lg">
         <span className="text-emerald-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
@@ -99,7 +106,7 @@ export const WhackMole: React.FC<{ onComplete: () => void; goal?: number; speed?
       <div className="mb-6 bg-white/95 backdrop-blur-xl px-10 py-3 rounded-3xl border-2 border-emerald-100 shadow-2xl z-10 font-black text-emerald-800 text-lg md:text-xl animate-spring shrink-0">
         ពិន្ទុ: <span className="text-orange-500 text-2xl md:text-3xl">{score}</span> / {currentGoal}
       </div>
-      
+
       <div className="grid grid-cols-3 gap-4 md:gap-6 w-full max-w-[320px] md:max-w-md aspect-square items-center shrink z-10">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} onClick={() => handleClick(i)} className={`w-full aspect-square rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center transition-all cursor-pointer shadow-xl active:shadow-inner active:scale-95 relative overflow-hidden group border-4 ${active === i ? 'bg-emerald-100/80 border-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]' : 'bg-white/80 border-transparent hover:bg-white/95'}`}>

@@ -20,6 +20,27 @@ import { Flashlight } from './components/Flashlight';
 import { PatternMaster } from './components/PatternMaster';
 import { WaterRefill } from './components/WaterRefill';
 import { SoapBubbles } from './components/SoapBubbles';
+// New Cambodian-themed games
+import { RicePlanting } from './components/RicePlanting';
+import { KhmerLetter } from './components/KhmerLetter';
+import { NoodleMaker } from './components/NoodleMaker';
+import { WaterSplash } from './components/WaterSplash';
+import { ElephantMarch } from './components/ElephantMarch';
+import { TempleBuilder } from './components/TempleBuilder';
+import { FruitChop } from './components/FruitChop';
+import { KiteFlying } from './components/KiteFlying';
+import { LotusBloom } from './components/LotusBloom';
+import { CoconutCatch } from './components/CoconutCatch';
+import { TukTukDriver } from './components/TukTukDriver';
+import { MarketShop } from './components/MarketShop';
+import { FishPond } from './components/FishPond';
+import { BoatRace } from './components/BoatRace';
+import { ColorApsara } from './components/ColorApsara';
+import { GeckoHunt } from './components/GeckoHunt';
+import { Firecracker } from './components/Firecracker';
+import { BobaShake } from './components/BobaShake';
+import { PalmClimb } from './components/PalmClimb';
+import { HammockSwing } from './components/HammockSwing';
 
 const LEVELS_PER_CHAPTER = 17;
 const TOTAL_LEVELS = 102;
@@ -229,6 +250,27 @@ const App: React.FC = () => {
               case GameType.GEM_SORT: return <GemSorter {...props} count={Math.floor(4 * factor)} />;
               case GameType.MAZE: return <ButterflyMaze {...props} difficulty={factor} />;
               case GameType.SIZE_WHEEL: return <BalloonSizer {...props} tolerance={Math.max(5, Math.floor(15 / factor))} />;
+              // New Cambodian-themed games
+              case GameType.RICE_PLANTING: return <RicePlanting {...props} count={Math.floor(6 * factor)} />;
+              case GameType.KHMER_LETTER: return <KhmerLetter {...props} count={Math.floor(3 * factor)} />;
+              case GameType.NOODLE_MAKER: return <NoodleMaker {...props} count={Math.floor(4 * factor)} />;
+              case GameType.WATER_SPLASH: return <WaterSplash {...props} count={Math.floor(5 * factor)} />;
+              case GameType.ELEPHANT_MARCH: return <ElephantMarch {...props} count={Math.floor(3 * factor)} />;
+              case GameType.TEMPLE_BUILDER: return <TempleBuilder {...props} count={Math.floor(5 * factor)} />;
+              case GameType.FRUIT_CHOP: return <FruitChop {...props} count={Math.floor(6 * factor)} />;
+              case GameType.KITE_FLYING: return <KiteFlying {...props} count={Math.floor(3 * factor)} />;
+              case GameType.LOTUS_BLOOM: return <LotusBloom {...props} count={Math.floor(5 * factor)} />;
+              case GameType.COCONUT_CATCH: return <CoconutCatch {...props} count={Math.floor(8 * factor)} />;
+              case GameType.TUK_TUK: return <TukTukDriver {...props} count={Math.floor(3 * factor)} />;
+              case GameType.MARKET_SHOP: return <MarketShop {...props} count={Math.floor(5 * factor)} />;
+              case GameType.FISH_POND: return <FishPond {...props} count={Math.floor(5 * factor)} />;
+              case GameType.BOAT_RACE: return <BoatRace {...props} count={Math.floor(3 * factor)} />;
+              case GameType.COLOR_APSARA: return <ColorApsara {...props} count={Math.floor(6 * factor)} />;
+              case GameType.GECKO_HUNT: return <GeckoHunt {...props} count={Math.floor(6 * factor)} />;
+              case GameType.FIRECRACKER: return <Firecracker {...props} count={Math.floor(5 * factor)} />;
+              case GameType.BOBA_SHAKE: return <BobaShake {...props} count={Math.floor(3 * factor)} />;
+              case GameType.PALM_CLIMB: return <PalmClimb {...props} count={Math.floor(3 * factor)} />;
+              case GameType.HAMMOCK_SWING: return <HammockSwing {...props} count={Math.floor(3 * factor)} />;
               default: return <BalloonPop {...props} />;
             }
           })()}

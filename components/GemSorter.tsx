@@ -51,7 +51,7 @@ export const GemSorter: React.FC<{ onComplete: () => void; count?: number }> = (
         // Drop zones are simplified to left/right halves below 60% Y
         const inRedBin = item.x < 40 && item.y > 55;
         const inBlueBin = item.x > 60 && item.y > 55;
-        
+
         const isCorrect = (item.type === 'RED' && inRedBin) || (item.type === 'BLUE' && inBlueBin);
 
         if (isCorrect) {
@@ -86,38 +86,41 @@ export const GemSorter: React.FC<{ onComplete: () => void; count?: number }> = (
   const draggedItem = items.find(i => i.id === dragId);
 
   return (
-    <div 
-      onMouseMove={handleDrag} 
-      onMouseUp={handleDrop} 
-      onMouseLeave={handleDrop} 
+    <div
+      onMouseMove={handleDrag}
+      onMouseUp={handleDrop}
+      onMouseLeave={handleDrop}
       className="relative w-full h-full bg-pink-50/20 overflow-hidden select-none flex flex-col items-center"
     >
       <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-pink-200 shadow-sm">
         <span className="text-pink-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
-
-      <div className="text-center font-black text-pink-900 text-xl mt-6 px-4">
-        បែងចែកតាមពណ៌! ({items.length} នៅសល់)
+      <div className="absolute top-4 w-full text-center z-20">
+        <div className="inline-block bg-pink-100/80 backdrop-blur-md px-8 py-3 rounded-[2rem] border-2 border-pink-300 shadow-xl">
+          <h2 className="text-xl md:text-2xl font-black text-pink-900 tracking-tight">បែងចែកតាមពណ៌! ({items.length} នៅសល់)</h2>
+        </div>
       </div>
-      
+
+
+
       <div className={`absolute bottom-6 left-6 w-32 h-32 md:w-44 md:h-40 border-4 rounded-2xl flex flex-col items-center justify-center p-2 shadow-lg transition-all duration-300 ${draggedItem?.type === 'RED' ? 'bg-red-200 border-red-500 scale-105 shadow-red-200' : 'bg-red-100/40 border-red-500 opacity-60'}`}>
-         <div className="text-6xl opacity-30">📦</div>
-         <div className="font-black text-red-600 text-[10px] md:text-xs uppercase mt-1 bg-white px-3 py-1 rounded-full">ក្រហម (RED)</div>
+        <div className="text-6xl opacity-30">📦</div>
+        <div className="font-black text-red-600 text-[10px] md:text-xs uppercase mt-1 bg-white px-3 py-1 rounded-full">ក្រហម (RED)</div>
       </div>
 
       <div className={`absolute bottom-6 right-6 w-32 h-32 md:w-44 md:h-40 border-4 rounded-2xl flex flex-col items-center justify-center p-2 shadow-lg transition-all duration-300 ${draggedItem?.type === 'BLUE' ? 'bg-blue-200 border-blue-500 scale-105 shadow-blue-200' : 'bg-blue-100/40 border-blue-500 opacity-60'}`}>
-         <div className="text-6xl opacity-30">📦</div>
-         <div className="font-black text-blue-600 text-[10px] md:text-xs uppercase mt-1 bg-white px-3 py-1 rounded-full">ខៀវ (BLUE)</div>
+        <div className="text-6xl opacity-30">📦</div>
+        <div className="font-black text-blue-600 text-[10px] md:text-xs uppercase mt-1 bg-white px-3 py-1 rounded-full">ខៀវ (BLUE)</div>
       </div>
-      
+
       {items.map(item => (
         <div
           key={`${round}-${item.id}`}
           onMouseDown={() => handleStart(item.id)}
           className={`absolute text-5xl md:text-7xl cursor-grab active:cursor-grabbing transition-transform ${dragId === item.id ? 'scale-125 z-50 pointer-events-none' : 'hover:scale-110'}`}
-          style={{ 
-            left: `${item.x}%`, 
-            top: `${item.y}%`, 
+          style={{
+            left: `${item.x}%`,
+            top: `${item.y}%`,
             transform: 'translate(-50%, -50%)',
             transition: dragId === item.id ? 'none' : 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }}

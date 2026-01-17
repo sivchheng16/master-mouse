@@ -46,13 +46,13 @@ const MagicGarden: React.FC<MagicGardenProps> = ({ onComplete, count = 9 }) => {
         <span className="text-emerald-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
 
-      <div className="text-center z-20 shrink-0 mb-8 mt-4">
-        <div className="inline-block bg-white/90 px-10 py-4 rounded-3xl border-2 border-emerald-200 shadow-xl">
+      <div className=" text-center z-20 shrink-0 mb-8 -mt-2">
+        <div className="inline-block bg-white/90 px-8 py-3 rounded-3xl border-2 border-emerald-200 shadow-xl">
           <div className="text-xl md:text-4xl font-black text-emerald-800">ដាក់ម៉ៅពីលើដើម្បីឱ្យផ្ការីក! ({revealed.length}/{currentRoundCount})</div>
         </div>
       </div>
       
-      <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-2 md:gap-4 pb-4">
+      <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-2 md:gap-4 pb-4 ">
         {Array.from({ length: currentRoundCount }).map((_, i) => (
           <div
             key={`${round}-${i}`}

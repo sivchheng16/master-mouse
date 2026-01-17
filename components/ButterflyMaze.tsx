@@ -69,10 +69,19 @@ export const ButterflyMaze: React.FC<{ onComplete: () => void; difficulty?: numb
         <span className="text-yellow-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
 
-      <div className="absolute top-4 text-xl font-black text-yellow-900 text-center w-full uppercase z-20 pointer-events-none px-4">
-         {failed ? 'អូស! ប៉ះជញ្ជាំងហើយ! ព្យាយាមម្តងទៀត' : !gameStarted ? 'ចាប់ផ្ដើមពីទង់ជាតិ! 🏁' : 'នាំមេអំបៅទៅរកផ្កា! 🌸'}
+      <div className="absolute top-4 flex justify-center z-20 w-full px-4">
+        <div className="bg-white/90 px-8 py-3 rounded-3xl border-2 border-yellow-200 shadow-xl text-center">
+          <div className="text-xl md:text-2xl font-black text-yellow-900 tracking-tight leading-none">
+                    {failed ? 'អូស! ប៉ះជញ្ជាំងហើយ! ព្យាយាមម្តងទៀត' : !gameStarted ? 'ចាប់ផ្ដើមពីទង់ជាតិ! 🏁' : 'នាំមេអំបៅទៅរកផ្កា! 🌸'}
+
+          </div>
+        </div>
       </div>
-      
+
+
+      {/* <div className="absolute top-4 text-xl font-black text-yellow-900 text-center w-full uppercase z-20 pointer-events-none px-4  bg-white/90 px-8 py-3 rounded-3xl border-2 border-slate-200 shadow-xl">
+      </div>
+       */}
       <div 
         ref={containerRef}
         onMouseMove={gameStarted ? updateMousePosition : undefined}
