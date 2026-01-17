@@ -60,7 +60,7 @@ export const Flashlight: React.FC<{ onComplete: () => void; count?: number }> = 
         <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
       </div>
 
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white font-black uppercase text-sm tracking-widest text-center w-full z-10 pointer-events-none">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white font-black uppercase text-lg tracking-widest text-center w-full z-10 pointer-events-none">
          ស្វែងរកសោទាំង {keys.length} ដែលលាក់ទុក! ({keys.filter(k => k.found).length}/{keys.length})
       </div>
       
