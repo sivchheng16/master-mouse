@@ -40,7 +40,7 @@ import { GeckoHunt } from './components/GeckoHunt';
 import { Firecracker } from './components/Firecracker';
 import { BobaShake } from './components/BobaShake';
 import { PalmClimb } from './components/PalmClimb';
-import OfflineStatus from './components/OfflineStatus';
+
 import InstallPwa from './components/InstallPwa';
 
 const LEVELS_PER_CHAPTER = 17;
@@ -492,7 +492,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <OfflineStatus />
+
       <InstallPwa />
     </div>
   );
