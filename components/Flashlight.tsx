@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const Flashlight: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 3 }) => {
   const [round, setRound] = useState(1);
@@ -49,21 +50,21 @@ export const Flashlight: React.FC<{ onComplete: () => void; count?: number }> = 
   };
 
   return (
-    <div 
+    <div
       onMouseMove={handleMove}
       className="relative w-full h-full bg-black overflow-hidden cursor-none"
-      style={{ 
-        background: `radial-gradient(circle at ${mouse.x}% ${mouse.y}%, rgba(255,255,255,0.25) 0%, rgba(0,0,0,1) 120px)` 
+      style={{
+        background: `radial-gradient(circle at ${mouse.x}% ${mouse.y}%, rgba(255,255,255,0.25) 0%, rgba(0,0,0,1) 120px)`
       }}
     >
-      <div className="absolute top-4 right-8 z-40 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 shadow-sm">
-        <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ស្វែងរកសោទាំងអស់ដែលលាក់ទុក! 🔑"
+        score={keys.filter(k => k.found).length}
+        goal={keys.length}
+      />
 
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white font-black uppercase text-lg tracking-widest text-center w-full z-10 pointer-events-none">
-         ស្វែងរកសោទាំង {keys.length} ដែលលាក់ទុក! ({keys.filter(k => k.found).length}/{keys.length})
-      </div>
-      
       {keys.map(k => !k.found && (
         <button
           key={`${round}-${k.id}`}
@@ -75,7 +76,7 @@ export const Flashlight: React.FC<{ onComplete: () => void; count?: number }> = 
           🔑
         </button>
       ))}
-      
+
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 z-10 bg-white/5 backdrop-blur-md px-6 py-3 rounded-full border border-white/10">
         {keys.map(k => (
           <div key={`${round}-${k.id}`} className={`text-2xl transition-all duration-700 ${k.found ? 'opacity-100 scale-110' : 'opacity-10 grayscale'}`}>

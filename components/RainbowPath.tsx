@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface RainbowPathProps {
   onComplete: () => void;
@@ -57,13 +58,13 @@ const RainbowPath: React.FC<RainbowPathProps> = ({ onComplete, segments = 8 }) =
 
   return (
     <div className="relative w-full h-full bg-indigo-50 overflow-hidden flex flex-col items-center justify-center p-8">
-      <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-indigo-100 shadow-sm">
-        <span className="text-indigo-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="text-xl md:text-3xl font-black text-indigo-700 text-center mb-10">
-        រំកិលម៉ៅតាមផ្លូវឥន្ទធនូ! ({visited.length}/{currentSegments})
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="រំកិលម៉ៅតាមផ្លូវឥន្ទធនូ!"
+        score={visited.length}
+        goal={currentSegments}
+      />
 
       <div className="flex w-full max-w-5xl h-32 relative bg-white/30 rounded-full border-2 border-dashed border-indigo-200 overflow-hidden">
         {visited.length === 0 && !showLevelUp && (

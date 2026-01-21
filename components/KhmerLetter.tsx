@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Point {
     x: number;
@@ -29,7 +30,8 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
     const [progress, setProgress] = useState(0);
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [completed, setCompleted] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
+    // Explicitly type the ref for the game card (white box)
+    const cardRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!showLevelUp) {
@@ -42,12 +44,13 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
     }, [round, showLevelUp]);
 
     const getRelativePos = (e: React.MouseEvent): Point => {
-        if (!containerRef.current) return { x: 0, y: 0 };
-        const rect = containerRef.current.getBoundingClientRect();
-        return {
-            x: ((e.clientX - rect.left) / rect.width) * 100,
-            y: ((e.clientY - rect.top) / rect.height) * 100,
-        };
+        if (!cardRef.current) return { x: 0, y: 0 };
+        const rect = cardRef.current.getBoundingClientRect();
+        // Calculate position relative to the CARD, not the window
+        // Clamp values to 0-100 to keep drawing inside the box roughly
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        return { x, y };
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -97,42 +100,37 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
 
     return (
         <div
-            ref={containerRef}
             className="relative w-full h-full overflow-hidden select-none bg-gradient-to-b from-amber-100 to-amber-200"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
+            // Add global mouse up listener to catch drags that end outside the box
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
         >
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-amber-300 shadow-sm">
-                <span className="text-amber-900 font-black text-xs uppercase tracking-widest">អក្សរទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-amber-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-amber-800">
-                        គូរអក្សរ "{currentLetter.char}" ({currentLetter.name})
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction={`គូរអក្សរ "${currentLetter.char}" (${currentLetter.name})`}
+            />
 
             {/* Letter display area */}
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-white rounded-[3rem] shadow-2xl border-8 border-amber-300">
+                <div
+                    ref={cardRef}
+                    className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-white rounded-[3rem] shadow-2xl border-8 border-amber-300 touch-none cursor-crosshair"
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseUp}
+                >
                     {/* Ghost letter to trace */}
                     <div className="absolute inset-0 flex items-center justify-center text-[180px] md:text-[250px] text-amber-200 font-bold pointer-events-none select-none">
                         {currentLetter.char}
                     </div>
 
                     {/* User's drawing */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
                         {userPath.length > 1 && (
                             <path
-                                d={`M ${userPath.map(p => `${p.x * 3},${p.y * 3}`).join(' L ')}`}
+                                d={`M ${userPath.map(p => `${p.x},${p.y}`).join(' L ')}`}
                                 stroke="#f59e0b"
-                                strokeWidth="12"
+                                strokeWidth="4"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 fill="none"
@@ -142,7 +140,7 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
                     </svg>
 
                     {/* Progress indicator */}
-                    <div className="absolute bottom-4 left-4 right-4">
+                    <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
                         <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-300"
@@ -153,7 +151,7 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
 
                     {/* Completion checkmark */}
                     {completed && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-[3rem] animate-in fade-in duration-300">
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-[3rem] animate-in fade-in duration-300 z-10 pointer-events-none">
                             <div className="text-8xl animate-bounce">✅</div>
                         </div>
                     )}
@@ -161,8 +159,8 @@ export const KhmerLetter: React.FC<{ onComplete: () => void; count?: number }> =
             </div>
 
             {/* Decorative elements */}
-            <div className="absolute bottom-8 left-8 text-6xl opacity-50">📝</div>
-            <div className="absolute bottom-8 right-8 text-6xl opacity-50">✏️</div>
+            <div className="absolute bottom-8 left-8 text-6xl opacity-50 pointer-events-none">📝</div>
+            <div className="absolute bottom-8 right-8 text-6xl opacity-50 pointer-events-none">✏️</div>
 
             {/* Level up modal */}
             {showLevelUp && (

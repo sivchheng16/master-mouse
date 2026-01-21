@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Bubble {
   id: number;
@@ -72,15 +73,13 @@ export const SoapBubbles: React.FC<{ onComplete: () => void; count?: number }> =
 
   return (
     <div key={`soap-round-${round}`} className="relative w-full h-full bg-gradient-to-br from-sky-50 to-indigo-100 overflow-hidden select-none">
-      <div className="absolute top-4 right-8 z-40 bg-white/60 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-sky-200 shadow-md">
-        <span className="text-sky-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="absolute top-10 w-full text-center z-20">
-        <div className="inline-block bg-white/90 backdrop-blur-md px-12 py-5 rounded-[2rem] border-2 border-sky-100 shadow-2xl">
-          <h2 className="text-2xl md:text-5xl font-black text-sky-900 tracking-tight">បំបែកពពុះសាប៊ូ! ({popped}/{currentRoundCount})</h2>
-        </div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="បំបែកពពុះសាប៊ូ!"
+        score={popped}
+        goal={currentRoundCount}
+      />
 
       <div className="absolute inset-0">
         {bubbles.map(b => (

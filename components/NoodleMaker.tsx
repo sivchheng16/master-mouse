@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Topping {
     id: number;
@@ -124,19 +125,13 @@ export const NoodleMaker: React.FC<{ onComplete: () => void; count?: number }> =
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-orange-300 shadow-sm">
-                <span className="text-orange-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-orange-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-orange-800">
-                        ដាក់គ្រឿងលើនំបញ្ចុក! 🍜 ({placed}/{currentCount})
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ដាក់គ្រឿងលើនំបញ្ចុក! 🍜"
+                score={placed}
+                goal={currentCount}
+            />
 
             {/* Noodle bowl */}
             <div className="absolute left-1/2 top-[35%] -translate-x-1/2 -translate-y-1/2">

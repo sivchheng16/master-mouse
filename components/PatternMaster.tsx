@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const PatternMaster: React.FC<{ onComplete: () => void; length?: number; speed?: number }> = ({ onComplete, length = 3, speed = 800 }) => {
   const [round, setRound] = useState(1);
@@ -78,17 +79,11 @@ export const PatternMaster: React.FC<{ onComplete: () => void; length?: number; 
 
   return (
     <div className="relative w-full h-full bg-rose-50 flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden shadow-inner">
-      <div className="absolute top-4 z-40 flex justify-center w-full px-4">
-        <div className="bg-white/90 px-8 py-3 rounded-3xl border-2 border-rose-200 shadow-xl text-center">
-          <div className="text-xl md:text-2xl font-black text-rose-800 tracking-tight leading-none">
-            ចុចតាមលំនាំដែលបង្ហាញ
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-rose-200 shadow-sm">
-        <span className="text-rose-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ចុចតាមលំនាំដែលបង្ហាញ"
+      />
 
 
 

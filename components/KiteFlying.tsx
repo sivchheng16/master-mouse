@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const KiteFlying: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 3 }) => {
     const [round, setRound] = useState(1);
@@ -106,122 +107,140 @@ export const KiteFlying: React.FC<{ onComplete: () => void; count?: number }> = 
             className="relative w-full h-full overflow-hidden select-none"
             onWheel={handleScroll}
             style={{
-                background: 'linear-gradient(180deg, #1e3a5f 0%, #2d5a87 30%, #4a90b8 60%, #87ceeb 100%)',
+                background: 'linear-gradient(180deg, #3aa2f0 0%, #8bcbf9 40%, #cce9ff 100%)',
             }}
         >
-            {/* Sun */}
-            <div className="absolute top-12 right-16 w-20 h-20 bg-yellow-300 rounded-full shadow-[0_0_60px_rgba(255,200,0,0.6)]" />
+            {/* Realistic Sky Elements */}
+            <div className="absolute top-8 right-12 w-24 h-24 bg-[#ffeb3b] rounded-full shadow-[0_0_100px_rgba(255,235,59,0.8)] animate-pulse-slow opactiy-90" />
 
-            {/* Clouds */}
-            {[...Array(4)].map((_, i) => (
+            {/* Fluffy Clouds */}
+            {[...Array(5)].map((_, i) => (
                 <div
                     key={i}
-                    className="absolute text-5xl opacity-60 animate-float-cloud pointer-events-none"
+                    className="absolute text-white/80 animate-float-cloud pointer-events-none blur-[1px]"
                     style={{
-                        top: `${15 + i * 20}%`,
-                        animationDelay: `${-i * 7}s`,
-                        animationDuration: `${25 + i * 5}s`,
+                        top: `${10 + i * 15}%`,
+                        fontSize: `${4 + i * 1.5}rem`,
+                        animationDelay: `${-i * 8}s`,
+                        animationDuration: `${35 + i * 5}s`,
+                        textShadow: '0 0 20px rgba(255,255,255,0.8)'
                     }}
                 >
                     ☁️
                 </div>
             ))}
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border border-sky-300 shadow-sm">
-                <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="បោះខ្លែង! រមូរកង់ម៉ៅ! 🪁"
+                score={score}
+                goal={targetScore}
+            />
 
-            {/* Timer */}
-            <div className="absolute top-4 left-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border border-sky-300 shadow-sm">
-                <span className={`font-black text-sm ${timeLeft <= 5 ? 'text-red-400' : 'text-white'}`}>
-                    ⏱️ {timeLeft}s
-                </span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/30 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-sky-300 shadow-xl">
-                    <h2 className="text-xl md:text-2xl font-black text-white drop-shadow-lg">
-                        បោះខ្លែង! រមូរកង់ម៉ៅ! 🪁 ({score}/{targetScore})
-                    </h2>
-                </div>
-            </div>
-
-            {/* Target zone */}
+            {/* Focused Target Zone Indicator */}
             <div
-                className={`absolute left-[20%] right-[40%] h-16 rounded-2xl border-4 border-dashed transition-all duration-500 ${isInZone ? 'bg-green-400/40 border-green-400' : 'bg-yellow-400/30 border-yellow-400'
+                className={`absolute left-[25%] right-[25%] h-24 rounded-3xl border-4 transition-all duration-300 z-10 flex items-center justify-between px-4 ${isInZone
+                    ? 'border-green-400 bg-green-400/20 shadow-[0_0_50px_rgba(74,222,128,0.4)] scale-105'
+                    : 'border-white/40 bg-white/10 border-dashed'
                     }`}
                 style={{ top: `${targetY}%`, transform: 'translateY(-50%)' }}
             >
-                <div className="absolute -left-16 top-1/2 -translate-y-1/2 text-3xl">
-                    {isInZone ? '✅' : '👉'}
-                </div>
+                <span className={`text-4xl transition-opacity ${isInZone ? 'opacity-100' : 'opacity-50'}`}>✨</span>
+                <span className={`text-4xl transition-opacity ${isInZone ? 'opacity-100' : 'opacity-50'}`}>✨</span>
             </div>
 
-            {/* Kite */}
+            {/* KITE (SVG) */}
             <div
-                className={`absolute right-[15%] transition-all duration-200 ${isInZone ? 'animate-pulse' : ''}`}
-                style={{ top: `${kiteY}%`, transform: 'translateY(-50%)' }}
+                className={`absolute left-1/2 -translate-x-1/2 transition-all duration-300 ease-out z-20 ${isInZone ? 'scale-110 drop-shadow-2xl' : 'scale-100 drop-shadow-lg'}`}
+                style={{ top: `${kiteY}%`, transform: 'translate(-50%, -50%)' }}
             >
-                {/* Kite shape */}
-                <div className="relative">
-                    <div className="text-7xl md:text-8xl drop-shadow-2xl animate-kite-sway">🪁</div>
-                    {/* Kite tail */}
-                    <svg className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-8 h-24 overflow-visible" viewBox="0 0 20 100">
-                        <path
-                            d="M10 0 Q 0 25 10 50 T 10 100"
-                            stroke="rgba(255,255,255,0.6)"
-                            strokeWidth="3"
-                            fill="none"
-                            className="animate-tail-wave"
-                        />
-                        {[20, 40, 60, 80].map((y, i) => (
-                            <circle key={i} cx="10" cy={y} r="4" fill={['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3'][i]} />
+                {/* String Line */}
+                <div className="absolute top-[80px] left-1/2 w-0.5 h-[1000px] bg-white/60 origin-top -translate-x-1/2" style={{ transform: `rotate(${(50 - kiteY) * 0.1}deg)` }} />
+
+                {/* SVG Kite Body */}
+                <svg width="120" height="160" viewBox="0 0 100 140" className="overflow-visible animate-kite-sway">
+                    {/* Frame */}
+                    <path d="M50 0 L90 40 L50 110 L10 40 Z" fill="#FF5252" stroke="white" strokeWidth="2" />
+                    {/* Cross Structure */}
+                    <path d="M10 40 L90 40" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    <path d="M50 0 L50 110" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+                    {/* Shine */}
+                    <path d="M50 0 L90 40 L50 110 L10 40 Z" fill="url(#shine)" opacity="0.3" />
+
+                    {/* Tail */}
+                    <path
+                        d="M50 110 Q 50 130 60 140 T 50 170 T 40 200"
+                        stroke="#FF5252"
+                        strokeWidth="4"
+                        fill="none"
+                        className="animate-tail-wave"
+                        strokeLinecap="round"
+                    />
+                    {/* Bows on tail */}
+                    {[130, 160, 190].map((y, i) => (
+                        <circle key={i} cx={50 + Math.sin(i) * 5} cy={y} r="3" fill="white" className="animate-pulse" />
+                    ))}
+
+                    <defs>
+                        <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="white" />
+                            <stop offset="100%" stopColor="transparent" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                {/* Wind Effect particles when in zone */}
+                {isInZone && (
+                    <div className="absolute -inset-10 pointer-events-none">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="absolute w-full h-0.5 bg-white/40 animate-wind-gust"
+                                style={{ top: `${20 + i * 30}%`, animationDelay: `${i * 0.2}s` }} />
                         ))}
-                    </svg>
-                </div>
+                    </div>
+                )}
             </div>
 
-            {/* Ground */}
-            <div className="absolute bottom-0 left-0 right-0 h-[15%] bg-gradient-to-t from-green-600 to-green-500">
-                {/* Trees */}
-                <div className="absolute bottom-0 left-[10%] text-4xl">🌳</div>
-                <div className="absolute bottom-0 left-[30%] text-5xl">🌴</div>
-                <div className="absolute bottom-0 right-[20%] text-4xl">🌳</div>
-                <div className="absolute bottom-0 right-[40%] text-3xl">🌲</div>
+
+            {/* Ground / Landscape */}
+            <div className="absolute bottom-0 left-0 right-0 h-[20%] pointer-events-none">
+                {/* Back Hills */}
+                <div className="absolute bottom-0 w-full h-[80%] bg-[#81c784] rounded-t-[50%] scale-x-150 translate-y-10" />
+                {/* Front Grass */}
+                <div className="absolute bottom-0 w-full h-[60%] bg-[#66bb6a] rounded-t-[30%] shadow-lg" />
+
+                {/* Decor */}
+                <div className="absolute bottom-4 left-10 text-6xl drop-shadow-md">🏡</div>
+                <div className="absolute bottom-4 right-10 text-6xl drop-shadow-md">🌳</div>
+                <div className="absolute bottom-8 left-1/4 text-4xl drop-shadow-sm">🌲</div>
             </div>
 
-            {/* Person flying kite */}
-            <div className="absolute bottom-[12%] right-[18%] text-4xl">🧒</div>
-
-            {/* Score bar */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[60%] bg-white/20 backdrop-blur-md rounded-full p-2">
-                <div
-                    className="h-4 bg-gradient-to-r from-sky-400 to-sky-600 rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(100, (score / targetScore) * 100)}%` }}
-                />
+            {/* Timer Floating */}
+            <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md px-6 py-1 rounded-full border border-white/40">
+                <span className={`font-mono text-xl ${timeLeft <= 5 ? 'text-red-500 font-black animate-ping' : 'text-white font-bold'}`}>
+                    00:{timeLeft.toString().padStart(2, '0')}
+                </span>
             </div>
 
             {/* Level up modal */}
             {showLevelUp && (
-                <div className="absolute inset-0 flex items-center justify-center bg-sky-900/40 backdrop-blur-md z-[100] animate-in fade-in zoom-in duration-500">
-                    <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-sky-200 text-center">
-                        <h2 className="title-font text-5xl text-sky-600 animate-bounce mb-4">អស្ចារ្យ!</h2>
-                        <p className="text-xl font-black text-sky-900">ខ្យល់កាន់តែខ្លាំង! 🪁</p>
+                <div className="absolute inset-0 flex items-center justify-center bg-blue-900/40 backdrop-blur-md z-[100] animate-in fade-in zoom-in duration-500">
+                    <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-blue-200 text-center">
+                        <h2 className="title-font text-5xl text-blue-600 animate-bounce mb-4">អស្ចារ្យ!</h2>
+                        <p className="text-xl font-black text-blue-900 animate-pulse">ខ្លែងហោះខ្ពស់ណាស់! 🪁</p>
                     </div>
                 </div>
             )}
 
             {/* Completion */}
             {completed && !showLevelUp && (
-                <div className="absolute inset-0 flex items-center justify-center bg-sky-900/20 backdrop-blur-md z-50 animate-in fade-in zoom-in duration-500">
-                    <div className="bg-white/90 p-12 rounded-[3.5rem] shadow-2xl border-8 border-white text-center">
-                        <h2 className="title-font text-5xl text-sky-600 animate-bounce mb-6">បោះខ្លែងពូកែ! 🎉</h2>
-                        <div className="flex justify-center gap-4 text-5xl">
-                            <span className="animate-pulse">🪁</span>
-                            <span className="animate-bounce">☁️</span>
-                            <span className="animate-pulse">🪁</span>
+                <div className="absolute inset-0 flex items-center justify-center bg-blue-900/20 backdrop-blur-md z-50 animate-in fade-in zoom-in duration-500">
+                    <div className="bg-white/95 p-16 rounded-[3rem] shadow-2xl border-8 border-white text-center transform hover:scale-105 transition-transform">
+                        <h2 className="title-font text-6xl text-blue-600 animate-tada mb-8">ជ័យជំនះ! 🎉</h2>
+                        <div className="flex justify-center gap-6 text-7xl">
+                            <span className="animate-bounce delay-100">🏆</span>
+                            <span className="animate-bounce delay-200">🪁</span>
+                            <span className="animate-bounce delay-300">🌟</span>
                         </div>
                     </div>
                 </div>
@@ -229,25 +248,49 @@ export const KiteFlying: React.FC<{ onComplete: () => void; count?: number }> = 
 
             <style>{`
         @keyframes float-cloud {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100vw); }
+          from { transform: translateX(-150px); }
+          to { transform: translateX(110vw); }
         }
         .animate-float-cloud {
-          animation: float-cloud 30s linear infinite;
+          animation: float-cloud 40s linear infinite;
         }
         @keyframes kite-sway {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(5deg); }
+          0%, 100% { transform: rotate(-3deg) translateY(0); }
+          50% { transform: rotate(3deg) translateY(-5px); }
         }
         .animate-kite-sway {
-          animation: kite-sway 2s ease-in-out infinite;
+          animation: kite-sway 3s ease-in-out infinite;
         }
         @keyframes tail-wave {
-          0%, 100% { d: path('M10 0 Q 0 25 10 50 T 10 100'); }
-          50% { d: path('M10 0 Q 20 25 10 50 T 10 100'); }
+          0% { d: path('M50 110 Q 50 130 60 140 T 50 170 T 40 200'); }
+          50% { d: path('M50 110 Q 60 130 40 140 T 60 170 T 50 200'); }
+          100% { d: path('M50 110 Q 50 130 60 140 T 50 170 T 40 200'); }
         }
         .animate-tail-wave {
-          animation: tail-wave 1s ease-in-out infinite;
+          animation: tail-wave 1.5s ease-in-out infinite;
+        }
+        @keyframes wind-gust {
+            0% { transform: translateX(-50%) scaleX(0.5); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateX(50%) scaleX(1.5); opacity: 0; }
+        }
+        .animate-wind-gust {
+            animation: wind-gust 1s linear infinite;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 4s ease-in-out infinite;
+        }
+        @keyframes sway-slow {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        .animate-sway-slow {
+            animation: sway-slow 4s ease-in-out infinite;
+            transform-origin: bottom center;
         }
       `}</style>
         </div>

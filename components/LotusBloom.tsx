@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Lotus {
     id: number;
@@ -11,14 +12,27 @@ interface Lotus {
     bloomed: boolean;
 }
 
+interface Fish {
+    id: number;
+    x: number;
+    y: number;
+    speed: number;
+    direction: 1 | -1;
+    type: string;
+    wobbleOffset: number;
+}
+
 export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 5 }) => {
     const [round, setRound] = useState(1);
     const totalRounds = 3;
     const [lotuses, setLotuses] = useState<Lotus[]>([]);
+    const [fishes, setFishes] = useState<Fish[]>([]);
     const [bloomed, setBloomed] = useState(0);
     const [showLevelUp, setShowLevelUp] = useState(false);
 
     const currentCount = count + (round - 1) * 2;
+
+    const FISH_TYPES = ['🐟', '🐠', '🐡', '🦈'];
 
     const initRound = (r: number) => {
         const numLotuses = count + (r - 1) * 2;
@@ -27,13 +41,58 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
             x: 15 + Math.random() * 70,
             y: 35 + Math.random() * 45,
             stage: 'bud',
-            timing: 2000 + Math.random() * 2000, // Random timing for each lotus
+            timing: 2000 + Math.random() * 2000,
             progress: 0,
+            
             bloomed: false,
         }));
         setLotuses(newLotuses);
         setBloomed(0);
     };
+
+    // Initialize fish
+    useEffect(() => {
+        const initialFishes: Fish[] = Array.from({ length: 8 }).map((_, i) => ({
+            id: i,
+            x: Math.random() * 100,
+            y: 20 + Math.random() * 70, // Swim in the main area
+            speed: 0.05 + Math.random() * 0.1,
+            direction: Math.random() > 0.5 ? 1 : -1,
+            type: FISH_TYPES[Math.floor(Math.random() * FISH_TYPES.length)],
+            wobbleOffset: Math.random() * Math.PI * 2,
+        }));
+        setFishes(initialFishes);
+    }, []);
+
+    // Fish animation loop
+    useEffect(() => {
+        let animationFrameId: number;
+
+        const animateFish = () => {
+            setFishes(prevFishes => prevFishes.map(fish => {
+                let newX = fish.x + fish.speed * fish.direction;
+                let newDirection = fish.direction;
+
+                // Wrap around logic
+                if (newX > 110) {
+                    newX = -10;
+                } else if (newX < -10) {
+                    newX = 110;
+                }
+
+                return {
+                    ...fish,
+                    x: newX,
+                    direction: newDirection,
+                };
+            }));
+            animationFrameId = requestAnimationFrame(animateFish);
+        };
+
+        animationFrameId = requestAnimationFrame(animateFish);
+        return () => cancelAnimationFrame(animationFrameId);
+    }, []);
+
 
     useEffect(() => {
         if (!showLevelUp) initRound(round);
@@ -89,7 +148,6 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
                 }
             }
         } else {
-            // Wrong timing - play error sound
             audioService.playError();
         }
     };
@@ -114,24 +172,48 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
     };
 
     // Decorative elements
-    const lilyPads = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
+    const lilyPads = useMemo(() => Array.from({ length: 12 }).map((_, i) => ({
         id: i,
-        x: 5 + Math.random() * 90,
-        y: 30 + Math.random() * 55,
-        size: 0.6 + Math.random() * 0.5,
+        x: Math.random() * 100,
+        y: 20 + Math.random() * 70,
+        size: 0.8 + Math.random() * 0.7,
         rotation: Math.random() * 360,
     })), []);
 
     return (
-        <div className="relative w-full h-full overflow-hidden select-none bg-gradient-to-b from-sky-300 via-sky-400 to-emerald-600">
-            {/* Water reflection effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+        <div className="relative w-full h-full overflow-hidden select-none bg-gradient-to-b from-sky-300 via-sky-400 to-teal-700">
+            {/* Water deep reflection */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/20 pointer-events-none" />
+
+            {/* Fish Layer - Behind everything */}
+            {fishes.map(fish => (
+                <div
+                    key={fish.id}
+                    className="absolute text-3xl md:text-4xl pointer-events-none opacity-80"
+                    style={{
+                        left: `${fish.x}%`,
+                        top: `${fish.y}%`,
+                        transform: `scaleX(${fish.direction * -1})`, // Flip fish based on direction
+                        transition: 'transform 0.5s',
+                    }}
+                >
+                    {fish.type}
+                </div>
+            ))}
+
+            {/* Subtle water ripples over fish */}
+            <div className="absolute inset-0 bg-transparent opacity-30 pointer-events-none"
+                style={{
+                    backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.2) 2px, transparent 10px)',
+                    backgroundSize: '40px 40px'
+                }}
+            />
 
             {/* Lily pads */}
             {lilyPads.map(pad => (
                 <div
                     key={pad.id}
-                    className="absolute text-4xl md:text-5xl opacity-60 pointer-events-none"
+                    className="absolute text-4xl md:text-5xl opacity-70 pointer-events-none z-10"
                     style={{
                         left: `${pad.x}%`,
                         top: `${pad.y}%`,
@@ -142,26 +224,19 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
                 </div>
             ))}
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-pink-300 shadow-sm">
-                <span className="text-pink-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ចុចពេល 🪷 រីក!"
+                score={bloomed}
+                goal={currentCount}
+            />
 
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-pink-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-pink-800">
-                        ចុចពេល 🪷 រីក! ({bloomed}/{currentCount})
-                    </h2>
-                    <p className="text-sm text-pink-600 mt-1">រង់ចាំពេលវេលាត្រឹមត្រូវ!</p>
-                </div>
-            </div>
-
-            {/* Lotuses */}
+            {/* Lotuses - High Z-index */}
             {lotuses.map(lotus => (
                 <div
                     key={lotus.id}
-                    className={`absolute cursor-pointer transition-all duration-200 ${lotus.bloomed ? 'scale-125' : 'hover:scale-110'
+                    className={`absolute cursor-pointer transition-all duration-200 z-20 ${lotus.bloomed ? 'scale-125' : 'hover:scale-110'
                         }`}
                     style={{
                         left: `${lotus.x}%`,
@@ -171,52 +246,32 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
                     onClick={() => handleClick(lotus.id)}
                     onMouseEnter={() => !lotus.bloomed && audioService.playHover()}
                 >
-                    <div className={`text-5xl md:text-6xl drop-shadow-xl transition-all duration-300 ${lotus.stage === 'flower' && !lotus.bloomed ? 'animate-pulse scale-110' : ''
+                    {/* Ripple under lotus */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white/20 rounded-full animate-ripple" />
+
+                    <div className={`text-5xl md:text-6xl drop-shadow-2xl transition-all duration-300 ${lotus.stage === 'flower' && !lotus.bloomed ? 'animate-pulse scale-110' : ''
                         } ${lotus.bloomed ? 'animate-bloom' : ''}`}>
                         {getLotusEmoji(lotus.stage, lotus.bloomed)}
                     </div>
 
                     {/* Timing indicator */}
                     {!lotus.bloomed && (
-                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-12 h-2 bg-white/30 rounded-full overflow-hidden">
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-12 h-2 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
                             <div
                                 className={`h-full transition-all duration-100 ${lotus.stage === 'flower' ? 'bg-green-400' :
-                                        lotus.stage === 'blooming' ? 'bg-yellow-400' : 'bg-pink-300'
+                                    lotus.stage === 'blooming' ? 'bg-yellow-400' : 'bg-pink-300'
                                     }`}
                                 style={{ width: `${(lotus.progress / lotus.timing) * 100}%` }}
                             />
                         </div>
                     )}
-
-                    {/* Success sparkles */}
-                    {lotus.bloomed && (
-                        <div className="absolute inset-0 pointer-events-none">
-                            {[...Array(6)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="absolute text-xl animate-sparkle"
-                                    style={{
-                                        left: '50%',
-                                        top: '50%',
-                                        transform: `rotate(${i * 60}deg) translateY(-40px)`,
-                                        animationDelay: `${i * 0.1}s`,
-                                    }}
-                                >
-                                    ✨
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             ))}
 
-            {/* Dragonflies */}
-            <div className="absolute top-[30%] left-[20%] text-3xl animate-dragonfly pointer-events-none">🦋</div>
-            <div className="absolute top-[40%] right-[25%] text-2xl animate-dragonfly pointer-events-none" style={{ animationDelay: '-3s' }}>🦋</div>
+            {/* Dragonflies - Top layer */}
+            <div className="absolute top-[30%] left-[20%] text-3xl animate-dragonfly pointer-events-none z-30">🦋</div>
+            <div className="absolute top-[40%] right-[25%] text-2xl animate-dragonfly pointer-events-none z-30" style={{ animationDelay: '-3s' }}>🦋</div>
 
-            {/* Fish in water */}
-            <div className="absolute bottom-[20%] left-[30%] text-3xl animate-fish pointer-events-none">🐟</div>
-            <div className="absolute bottom-[25%] right-[35%] text-2xl animate-fish pointer-events-none" style={{ animationDelay: '-2s' }}>🐠</div>
 
             {/* Level up modal */}
             {showLevelUp && (
@@ -243,12 +298,12 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
             )}
 
             <style>{`
-        @keyframes shimmer {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.3; }
+        @keyframes ripple {
+          0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+          100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
-        .animate-shimmer {
-          animation: shimmer 3s ease-in-out infinite;
+        .animate-ripple {
+          animation: ripple 2s linear infinite;
         }
         @keyframes bloom {
           0% { transform: translate(-50%, -50%) scale(1); }
@@ -258,13 +313,6 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
         .animate-bloom {
           animation: bloom 0.5s ease-out forwards;
         }
-        @keyframes sparkle {
-          0% { opacity: 1; transform: rotate(var(--r, 0deg)) translateY(-20px) scale(1); }
-          100% { opacity: 0; transform: rotate(var(--r, 0deg)) translateY(-60px) scale(0); }
-        }
-        .animate-sparkle {
-          animation: sparkle 0.8s ease-out forwards;
-        }
         @keyframes dragonfly {
           0%, 100% { transform: translate(0, 0); }
           25% { transform: translate(30px, -20px); }
@@ -273,13 +321,6 @@ export const LotusBloom: React.FC<{ onComplete: () => void; count?: number }> = 
         }
         .animate-dragonfly {
           animation: dragonfly 8s ease-in-out infinite;
-        }
-        @keyframes fish {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(50px); }
-        }
-        .animate-fish {
-          animation: fish 5s ease-in-out infinite;
         }
       `}</style>
         </div>

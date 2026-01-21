@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface MagicalColorsProps {
   onComplete: () => void;
@@ -60,28 +61,23 @@ const MagicalColors: React.FC<MagicalColorsProps> = ({ onComplete, count = 4 }) 
 
   return (
     <div className="relative w-full h-full bg-slate-100 overflow-hidden shadow-inner flex flex-col">
-      <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-300 shadow-sm">
-        <span className="text-slate-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="flex justify-center mt-6 z-20 w-full px-4">
-        <div className="bg-white/90 px-8 py-3 rounded-3xl border-2 border-slate-200 shadow-xl text-center">
-          <div className="text-xl md:text-2xl font-black text-slate-800 tracking-tight leading-none">
-            ប្រើប៊ូតុងម៉ៅ <span className="text-red-500 underline">ខាងស្តាំ</span> ដើម្បីដាស់រូបរាង! ({colored.length}/{shapes.length})
-          </div>
-        </div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ប្រើប៊ូតុងម៉ៅខាងស្តាំដើម្បីដាស់រូបរាង!"
+        score={colored.length}
+        goal={shapes.length}
+      />
 
       <div className="relative flex-1">
         {shapes.map((shape) => (
           <div
             key={`${round}-${shape.id}`}
             onContextMenu={(e) => handleRightClick(e, shape.id)}
-            className={`absolute w-20 h-20 md:w-24 md:h-24 flex items-center justify-center text-4xl md:text-5xl rounded-3xl md:rounded-full transition-all duration-500 cursor-help border-4 ${
-              colored.includes(shape.id)
+            className={`absolute w-20 h-20 md:w-24 md:h-24 flex items-center justify-center text-4xl md:text-5xl rounded-3xl md:rounded-full transition-all duration-500 cursor-help border-4 ${colored.includes(shape.id)
                 ? 'bg-white border-yellow-400 shadow-xl scale-110 rotate-12'
                 : 'bg-slate-300 border-slate-400 grayscale opacity-60 scale-100'
-            }`}
+              }`}
             style={{ left: `${shape.x}%`, top: `${shape.y}%`, transform: 'translate(-50%, -50%)' }}
           >
             {colored.includes(shape.id) ? shape.emoji : '⚪'}

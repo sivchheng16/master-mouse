@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface DeepSeaScrollProps {
   onComplete: () => void;
@@ -76,21 +77,25 @@ export const DeepSeaScroll: React.FC<DeepSeaScrollProps> = ({ onComplete, count 
 
   return (
     <div className="relative w-full h-full flex flex-col overflow-hidden select-none bg-gradient-to-b from-[#1e3a8a] via-[#0a192f] to-[#020617]">
-      <div className="absolute top-4 right-8 z-50 bg-blue-900/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-blue-400 shadow-sm transition-all hover:scale-105 active:scale-95 ">
-        <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ស្វែងរកសម្បតិ្តក្រោមសមុទ្រ! 🌊"
+        score={foundItems.length}
+        goal={items.length}
+      />
 
-      <div className="relative z-30 pt-4 px-4 w-full flex flex-col items-center">
-        <div className="bg-blue-950/90 p-4 rounded-2xl border-2 border-blue-400/30 shadow-2xl max-w-2xl w-full">
+      <div className="relative z-30 pt-24 px-4 w-full flex flex-col items-center pointer-events-none">
+        <div className="bg-blue-950/80 p-3 rounded-2xl border border-blue-400/30 shadow-xl max-w-xl w-full backdrop-blur-sm">
           <div className="flex justify-between items-center mb-2 px-1">
-            <span className="text-xs font-black text-blue-300 animate-pulse">ស្វែងរក ({foundItems.length}/{items.length}):</span>
-            <span className="bg-sky-500 px-3 py-1 rounded-full text-xs text-white border border-white/20 shadow-inner animate-float-level-tiny">ជម្រៅ: {currentDepth}m</span>
+            <span className="text-xs font-bold text-blue-300">វត្ថុដែលត្រូវរក:</span>
+            <span className="bg-sky-600/80 px-3 py-0.5 rounded-full text-[10px] text-white border border-white/20 shadow-inner">ជម្រៅ: {currentDepth}m</span>
           </div>
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 justify-center flex-wrap">
             {items.map(it => (
               <span
                 key={it.id}
-                className={`text-2xl transition-all duration-500 ${foundItems.includes(it.id) ? 'grayscale-0 scale-125 animate-pop-in' : 'grayscale opacity-30 scale-100'}`}
+                className={`text-xl transition-all duration-500 ${foundItems.includes(it.id) ? 'grayscale-0 scale-125 animate-pop-in' : 'grayscale opacity-40 scale-100'}`}
               >
                 {it.emoji}
               </span>

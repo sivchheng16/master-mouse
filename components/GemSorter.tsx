@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const GemSorter: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 4 }) => {
   const [round, setRound] = useState(1);
@@ -92,14 +93,11 @@ export const GemSorter: React.FC<{ onComplete: () => void; count?: number }> = (
       onMouseLeave={handleDrop}
       className="relative w-full h-full bg-pink-50/20 overflow-hidden select-none flex flex-col items-center"
     >
-      <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-pink-200 shadow-sm">
-        <span className="text-pink-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-      <div className="absolute top-4 w-full text-center z-20">
-        <div className="inline-block bg-pink-100/80 backdrop-blur-md px-8 py-3 rounded-[2rem] border-2 border-pink-300 shadow-xl">
-          <h2 className="text-xl md:text-2xl font-black text-pink-900 tracking-tight">បែងចែកតាមពណ៌! ({items.length} នៅសល់)</h2>
-        </div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction={`បែងចែកតាមពណ៌! (${items.length} នៅសល់)`}
+      />
 
 
 

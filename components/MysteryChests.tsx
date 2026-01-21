@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { GameHUD } from './GameHUD';
 
 interface MysteryChestsProps {
   onComplete: () => void;
@@ -33,17 +34,18 @@ const MysteryChests: React.FC<MysteryChestsProps> = ({ onComplete, count = 3 }) 
 
   return (
     <div className="relative w-full h-full bg-purple-50 overflow-hidden shadow-inner flex flex-wrap items-center justify-center gap-4 p-8">
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-xl md:text-2xl font-bold text-purple-700 text-center w-full px-4">
-        ចុចពីរដងដើម្បីបើកហឹបកំណប់! ({opened.length}/{count})
-      </div>
+      <GameHUD
+        instruction="ចុចពីរដងដើម្បីបើកហឹបកំណប់!"
+        score={opened.length}
+        goal={count}
+      />
 
       {chests.map((chest) => (
         <div
           key={chest.id}
           onDoubleClick={() => handleDoubleClick(chest.id)}
-          className={`group w-24 h-24 md:w-40 md:h-40 cursor-pointer flex flex-col items-center justify-center rounded-3xl transition-all duration-300 border-4 ${
-            opened.includes(chest.id) ? 'bg-yellow-100 border-yellow-400' : 'bg-purple-200 border-purple-300 hover:bg-purple-300'
-          }`}
+          className={`group w-24 h-24 md:w-40 md:h-40 cursor-pointer flex flex-col items-center justify-center rounded-3xl transition-all duration-300 border-4 ${opened.includes(chest.id) ? 'bg-yellow-100 border-yellow-400' : 'bg-purple-200 border-purple-300 hover:bg-purple-300'
+            }`}
         >
           <div className={`text-5xl md:text-7xl transition-transform ${opened.includes(chest.id) ? 'scale-110' : 'group-hover:scale-105'}`}>
             {opened.includes(chest.id) ? chest.treasure : '🎁'}

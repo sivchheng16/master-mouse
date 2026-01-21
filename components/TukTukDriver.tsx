@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Obstacle {
     id: number;
@@ -141,19 +142,11 @@ export const TukTukDriver: React.FC<{ onComplete: () => void; count?: number }> 
                 ))}
             </div>
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-amber-300 shadow-sm">
-                <span className="text-amber-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-6 py-3 rounded-[2rem] border-2 border-amber-300 shadow-xl">
-                    <h2 className="text-lg md:text-2xl font-black text-amber-800">
-                        {!passenger.pickedUp ? 'រើសអ្នកដំណើរ! 🧑' : 'ទៅទីកន្លែង! 🏁'}
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction={!passenger.pickedUp ? 'រើសអ្នកដំណើរ! 🧑' : 'ទៅទីកន្លែង! 🏁'}
+            />
 
             {/* Obstacles */}
             {obstacles.map(obs => (

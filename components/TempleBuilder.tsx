@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Block {
     id: number;
@@ -123,19 +124,13 @@ export const TempleBuilder: React.FC<{ onComplete: () => void; count?: number }>
             {/* Sun setting */}
             <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-32 h-32 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full shadow-[0_0_100px_rgba(255,150,0,0.8)]" />
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border border-orange-300 shadow-sm">
-                <span className="text-orange-100 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/30 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-orange-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-white drop-shadow-lg">
-                        សង់ប្រាសាទអង្គរ! 🏛️ ({placed}/{currentCount})
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="សង់ប្រាសាទអង្គរ! 🏛️"
+                score={placed}
+                goal={currentCount}
+            />
 
             {/* Temple building area */}
             <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2">

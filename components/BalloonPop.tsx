@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Balloon {
   id: number;
@@ -124,21 +125,25 @@ const BalloonPop: React.FC<BalloonPopProps> = ({ onComplete, count = 5 }) => {
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-[#4facfe] to-[#00f2fe] select-none">
-      {/* Round Indicator - Larger */}
-      <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border-2 border-white/40 shadow-lg">
-        <span className="text-white font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ចុចដើម្បីបំបែកប៉េងប៉ោង!"
+        score={poppedCount}
+        goal={currentRoundTotal}
+      />
 
       <div className="absolute inset-0 pointer-events-none z-0">
         {clouds.map(c => (
-          <div 
-            key={c.id} 
-            className="cloud-container absolute" 
-            style={{ 
-              top: c.top, 
-              animation: `float-cloud ${c.duration} linear infinite`, 
-              animationDelay: c.delay, 
-              transform: `scale(${c.scale})`, 
+          <div
+            key={c.id}
+            className="cloud-container absolute"
+            style={{
+              top: c.top,
+              animation: `float-cloud ${c.duration} linear infinite`,
+              animationDelay: c.delay,
+              transform: `scale(${c.scale})`,
               opacity: c.opacity,
               left: '-20%'
             }}
@@ -152,39 +157,33 @@ const BalloonPop: React.FC<BalloonPopProps> = ({ onComplete, count = 5 }) => {
         ))}
       </div>
 
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 text-center w-full">
-        <div className="inline-block bg-white/30 backdrop-blur-xl px-8 py-3 rounded-[2.5rem] border-2 border-white/50 shadow-2xl">
-           <h2 className="text-xl md:text-2xl font-black text-white drop-shadow-lg">ចុចដើម្បីបំបែកប៉េងប៉ោង! ({poppedCount}/{currentRoundTotal})</h2>
-        </div>
-      </div>
-
       {particles.map((p) => (
-        <div 
-          key={p.id} 
-          className="absolute w-3 h-3 rounded-sm pointer-events-none z-40 particle-boom" 
-          style={{ 
-            left: `${p.x}%`, 
-            top: `${p.y}%`, 
-            backgroundColor: p.color, 
-            '--tx': `${p.tx}px`, 
+        <div
+          key={p.id}
+          className="absolute w-3 h-3 rounded-sm pointer-events-none z-40 particle-boom"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            backgroundColor: p.color,
+            '--tx': `${p.tx}px`,
             '--ty': `${p.ty}px`,
             '--tr': `${p.rotation}deg`
-          } as any} 
+          } as any}
         />
       ))}
 
       {balloons.map((balloon) => (
-        <div 
-          key={balloon.id} 
-          onMouseEnter={() => audioService.playHover()} 
-          className={`absolute flex flex-col items-center cursor-pointer transition-transform ${balloon.isPopping ? 'scale-150 opacity-0' : 'balloon-floating'}`} 
-          style={{ 
-            left: `${balloon.x}%`, 
-            top: `${balloon.y}%`, 
-            animationDelay: `${balloon.delay}s`, 
-            zIndex: balloon.isPopping ? 50 : 20, 
-            transitionDuration: '0.2s' 
-          }} 
+        <div
+          key={balloon.id}
+          onMouseEnter={() => audioService.playHover()}
+          className={`absolute flex flex-col items-center cursor-pointer transition-transform ${balloon.isPopping ? 'scale-150 opacity-0' : 'balloon-floating'}`}
+          style={{
+            left: `${balloon.x}%`,
+            top: `${balloon.y}%`,
+            animationDelay: `${balloon.delay}s`,
+            zIndex: balloon.isPopping ? 50 : 20,
+            transitionDuration: '0.2s'
+          }}
           onClick={() => handlePop(balloon.id)}
         >
           <div className="relative shadow-2xl transition-transform hover:scale-110 active:scale-95 balloon-wobble" style={{ width: `${balloon.size}px`, height: `${balloon.size * 1.2}px`, borderRadius: '50% 50% 50% 50% / 40% 40% 60% 60%', background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.6) 0%, transparent 20%), radial-gradient(circle at 30% 30%, ${balloon.color} 0%, rgba(0,0,0,0.3) 150%)`, boxShadow: 'inset -5px -10px 15px rgba(0,0,0,0.1), 0 10px 25px rgba(0,0,0,0.2)' }}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Person {
     id: number;
@@ -116,19 +117,13 @@ export const WaterSplash: React.FC<{ onComplete: () => void; count?: number }> =
                 </div>
             ))}
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-sky-300 shadow-sm">
-                <span className="text-sky-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-sky-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-sky-800">
-                        សង្ក្រាន! ស្រោចទឹកមិត្តភក្តិ! 💦 ({splashed}/{currentCount})
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="សង្ក្រាន! ស្រោចទឹកមិត្តភក្តិ! 💦"
+                score={splashed}
+                goal={currentCount}
+            />
 
             {/* Splash effects */}
             {splashes.map(splash => (

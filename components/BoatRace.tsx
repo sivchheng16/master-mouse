@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface PathPoint {
     x: number;
@@ -112,6 +113,13 @@ export const BoatRace: React.FC<{ onComplete: () => void; count?: number }> = ({
                 background: 'linear-gradient(180deg, #1e3a5f 0%, #2980b9 30%, #3498db 70%, #5dade2 100%)',
             }}
         >
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="បុណ្យអុំទូក! ដើរតាមផ្លូវ!"
+                progress={progress}
+            />
+
             {/* Crowd on banks */}
             <div className="absolute top-0 left-0 right-0 h-[20%] bg-gradient-to-b from-green-600 to-green-500 flex items-end justify-around overflow-hidden">
                 {[...Array(12)].map((_, i) => (
@@ -127,20 +135,6 @@ export const BoatRace: React.FC<{ onComplete: () => void; count?: number }> = ({
                         {['👋', '🙌', '👏', '🎉'][i % 4]}
                     </div>
                 ))}
-            </div>
-
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-4 py-2 rounded-2xl border border-blue-300 shadow-sm">
-                <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-[22%] left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/30 backdrop-blur-xl px-6 py-3 rounded-[2rem] border-2 border-blue-300 shadow-xl">
-                    <h2 className="text-lg md:text-2xl font-black text-white drop-shadow-lg">
-                        បុណ្យអុំទូក! ដើរតាមផ្លូវ! 🚣 ({Math.floor(progress)}%)
-                    </h2>
-                </div>
             </div>
 
             {/* Water waves */}
@@ -162,10 +156,10 @@ export const BoatRace: React.FC<{ onComplete: () => void; count?: number }> = ({
                 <div
                     key={i}
                     className={`absolute w-6 h-6 rounded-full transition-all duration-300 ${i < currentPointIndex
-                            ? 'bg-yellow-400 border-2 border-yellow-600 scale-75'
-                            : i === currentPointIndex
-                                ? 'bg-green-400 border-2 border-green-600 animate-pulse scale-125'
-                                : 'bg-white/30 border-2 border-white/50'
+                        ? 'bg-yellow-400 border-2 border-yellow-600 scale-75'
+                        : i === currentPointIndex
+                            ? 'bg-green-400 border-2 border-green-600 animate-pulse scale-125'
+                            : 'bg-white/30 border-2 border-white/50'
                         }`}
                     style={{
                         left: `${point.x}%`,

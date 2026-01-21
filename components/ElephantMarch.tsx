@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface PathPoint {
     x: number;
@@ -103,19 +104,12 @@ export const ElephantMarch: React.FC<{ onComplete: () => void; count?: number }>
                 ))}
             </div>
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-green-300 shadow-sm">
-                <span className="text-green-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/50 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-green-300 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-green-800">
-                        ជួយដំរីដើរតាមផ្លូវ! 🐘 ({Math.floor(progress)}%)
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ជួយដំរីដើរតាមផ្លូវ! 🐘"
+                progress={progress}
+            />
 
             {/* Path visualization */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
@@ -151,10 +145,10 @@ export const ElephantMarch: React.FC<{ onComplete: () => void; count?: number }>
                 <div
                     key={i}
                     className={`absolute w-8 h-8 rounded-full transition-all duration-300 ${i < currentPointIndex
-                            ? 'bg-yellow-400 border-4 border-yellow-600 scale-75'
-                            : i === currentPointIndex
-                                ? 'bg-green-400 border-4 border-green-600 animate-pulse scale-125'
-                                : 'bg-gray-300 border-4 border-gray-400'
+                        ? 'bg-yellow-400 border-4 border-yellow-600 scale-75'
+                        : i === currentPointIndex
+                            ? 'bg-green-400 border-4 border-green-600 animate-pulse scale-125'
+                            : 'bg-gray-300 border-4 border-gray-400'
                         }`}
                     style={{
                         left: `${point.x}%`,

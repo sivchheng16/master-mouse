@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Seedling {
     id: number;
@@ -117,6 +118,14 @@ export const RicePlanting: React.FC<{ onComplete: () => void; count?: number }> 
                 background: 'linear-gradient(180deg, #87CEEB 0%, #87CEEB 40%, #8B4513 40%, #8B4513 100%)',
             }}
         >
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ដាំស្រូវក្នុងស្រែ!"
+                score={planted}
+                goal={currentCount}
+            />
+
             {/* Sky with sun */}
             <div className="absolute top-8 right-12 w-20 h-20 bg-yellow-300 rounded-full shadow-[0_0_60px_rgba(255,200,0,0.6)] animate-pulse" />
 
@@ -124,30 +133,16 @@ export const RicePlanting: React.FC<{ onComplete: () => void; count?: number }> 
             <div className="absolute top-12 left-[10%] text-6xl opacity-80 animate-float-cloud">☁️</div>
             <div className="absolute top-20 left-[60%] text-4xl opacity-60 animate-float-cloud" style={{ animationDelay: '-5s' }}>☁️</div>
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/30 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-white/40 shadow-lg">
-                <span className="text-amber-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
             {/* Paddy field water effect */}
             <div className="absolute top-[40%] left-0 right-0 h-[35%] bg-gradient-to-b from-[#7CB342]/30 to-[#558B2F]/50 pointer-events-none" />
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/30 backdrop-blur-xl px-12 py-5 rounded-[2.5rem] border-2 border-white/50 shadow-2xl">
-                    <h2 className="text-2xl md:text-4xl font-black text-amber-900 drop-shadow-lg">
-                        ដាំស្រូវក្នុងស្រែ! 🌾 ({planted}/{currentCount})
-                    </h2>
-                </div>
-            </div>
 
             {/* Rice paddy plot spots */}
             {plots.map(plot => (
                 <div
                     key={`plot-${plot.id}`}
                     className={`absolute w-14 h-14 rounded-full transition-all duration-300 ${plot.filled
-                            ? 'bg-green-500/80 border-4 border-green-600'
-                            : 'bg-amber-800/40 border-4 border-dashed border-amber-600/60'
+                        ? 'bg-green-500/80 border-4 border-green-600'
+                        : 'bg-amber-800/40 border-4 border-dashed border-amber-600/60'
                         }`}
                     style={{
                         left: `${plot.x}%`,

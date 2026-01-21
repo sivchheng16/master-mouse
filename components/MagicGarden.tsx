@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface MagicGardenProps {
   onComplete: () => void;
@@ -41,28 +42,24 @@ const MagicGarden: React.FC<MagicGardenProps> = ({ onComplete, count = 9 }) => {
 
   return (
     <div className="relative w-full h-full bg-emerald-50 overflow-hidden shadow-inner flex flex-col p-4 md:p-8">
-      {/* Round Indicator - Larger */}
-      <div className="absolute top-4 right-8 z-40 bg-emerald-100/90 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-emerald-300 shadow-md">
-        <span className="text-emerald-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ដាក់ម៉ៅពីលើដើម្បីឱ្យផ្ការីក!"
+        score={revealed.length}
+        goal={currentRoundCount}
+      />
 
-      <div className=" text-center z-20 shrink-0 mb-8 -mt-2">
-        <div className="inline-block bg-white/90 px-8 py-3 rounded-3xl border-2 border-emerald-200 shadow-xl">
-          <div className="text-xl md:text-4xl font-black text-emerald-800">ដាក់ម៉ៅពីលើដើម្បីឱ្យផ្ការីក! ({revealed.length}/{currentRoundCount})</div>
-        </div>
-      </div>
-      
       <div className="flex-1 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-2 md:gap-4 pb-4 ">
         {Array.from({ length: currentRoundCount }).map((_, i) => (
           <div
             key={`${round}-${i}`}
             onMouseEnter={() => handleAction(i)}
             onClick={() => handleAction(i)}
-            className={`flex items-center justify-center rounded-2xl md:rounded-[2.5rem] transition-all duration-300 cursor-crosshair group relative border-2 ${
-              revealed.includes(i) 
-                ? 'bg-white border-emerald-200 shadow-md scale-100' 
+            className={`flex items-center justify-center rounded-2xl md:rounded-[2.5rem] transition-all duration-300 cursor-crosshair group relative border-2 ${revealed.includes(i)
+                ? 'bg-white border-emerald-200 shadow-md scale-100'
                 : 'bg-emerald-100/30 border-emerald-100/50 scale-95 hover:bg-emerald-100/60'
-            }`}
+              }`}
           >
             {!revealed.includes(i) && (
               <div className="w-2 h-2 md:w-5 md:h-5 bg-emerald-300 rounded-full animate-pulse opacity-50" />
@@ -73,7 +70,7 @@ const MagicGarden: React.FC<MagicGardenProps> = ({ onComplete, count = 9 }) => {
           </div>
         ))}
       </div>
-      
+
       {showLevelUp && (
         <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/30 backdrop-blur-md z-[100] animate-in fade-in zoom-in duration-500">
           <div className="bg-white p-10 rounded-[3rem] shadow-2xl border-4 border-emerald-100 text-center">

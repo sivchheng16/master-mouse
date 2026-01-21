@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface FirecrackerItem {
     id: number;
@@ -123,19 +124,13 @@ export const Firecracker: React.FC<{ onComplete: () => void; count?: number }> =
                 </div>
             ))}
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-yellow-400 shadow-sm">
-                <span className="text-yellow-300 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 text-center">
-                <div className="inline-block bg-white/20 backdrop-blur-xl px-8 py-4 rounded-[2rem] border-2 border-yellow-400 shadow-xl">
-                    <h2 className="text-xl md:text-3xl font-black text-yellow-300 drop-shadow-lg">
-                        ចុចពេល 🔴 ក្រហម! 🎆 ({exploded}/{currentCount})
-                    </h2>
-                </div>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ចុចពេល 🔴 ក្រហម! 🎆"
+                score={exploded}
+                goal={currentCount}
+            />
 
             {/* Firecrackers */}
             {firecrackers.map(fc => (
@@ -164,10 +159,10 @@ export const Firecracker: React.FC<{ onComplete: () => void; count?: number }> =
                                 <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-16 h-3 bg-gray-700 rounded-full overflow-hidden">
                                     <div
                                         className={`h-full transition-all duration-100 ${fc.fuseProgress >= 70 && fc.fuseProgress <= 95
-                                                ? 'bg-red-500 animate-pulse'
-                                                : fc.fuseProgress < 70
-                                                    ? 'bg-yellow-400'
-                                                    : 'bg-gray-400'
+                                            ? 'bg-red-500 animate-pulse'
+                                            : fc.fuseProgress < 70
+                                                ? 'bg-yellow-400'
+                                                : 'bg-gray-400'
                                             }`}
                                         style={{ width: `${fc.fuseProgress}%` }}
                                     />

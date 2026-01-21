@@ -35,8 +35,7 @@ export enum GameType {
   GECKO_HUNT = 'GECKO_HUNT',              // ចាប់ច្កែ
   FIRECRACKER = 'FIRECRACKER',            // បំផ្ទុះកាំជ្រួច
   BOBA_SHAKE = 'BOBA_SHAKE',              // អង្គុំទឹកត្រា
-  PALM_CLIMB = 'PALM_CLIMB',              // ឡើងដើមត្នោត
-  HAMMOCK_SWING = 'HAMMOCK_SWING'         // អង្រឹង
+  PALM_CLIMB = 'PALM_CLIMB'              // ឡើងដើមត្នោត
 }
 
 export interface GameState {

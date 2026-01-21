@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 const EMOJIS = ['🦊', '🐰', '🦉', '🐻', '🐹', '🐧', '🦁', '🐯', '🦒', '🐘'];
 
@@ -39,7 +40,7 @@ export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = (
   };
 
   return (
-    <div 
+    <div
       onMouseMove={handleMouseMove}
       onMouseDown={(e) => {
         // If clicking background
@@ -50,9 +51,11 @@ export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = (
         background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, transparent 40px, rgba(0,0,0,0.98) 100px)`
       }}
     >
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white font-black uppercase text-sm tracking-widest pointer-events-none text-center w-full z-10">
-        ស្វែងរកសត្វទាំង {count} ដែលលាក់ខ្លួន! ({found.length}/{count})
-      </div>
+      <GameHUD
+        instruction="ស្វែងរកសត្វដែលលាក់ខ្លួន!"
+        score={found.length}
+        goal={count}
+      />
       {targets.map(t => (
         <button
           key={t.id}
@@ -66,7 +69,7 @@ export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = (
           {t.emoji}
         </button>
       ))}
-      <div 
+      <div
         className="absolute w-20 h-20 md:w-24 md:h-24 border-4 border-white/40 rounded-full pointer-events-none shadow-[0_0_50px_rgba(255,255,255,0.2)]"
         style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%`, transform: 'translate(-50%, -50%)' }}
       >

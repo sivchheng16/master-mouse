@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface Dot {
   id: number;
@@ -14,6 +15,8 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
   const [dots, setDots] = useState<Dot[]>([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const shapeNames = ["រង្វង់ (CIRCLE)", "ការ៉េ (SQUARE)", "បេះដូង (HEART)"];
 
   const getShapeDots = (r: number, baseCount: number): Dot[] => {
     const newDots: Dot[] = [];
@@ -58,16 +61,49 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
     setTraced([]);
   }, [round, count]);
 
+  const [cursorPos, setCursorPos] = useState<{ x: number, y: number } | null>(null);
+
   const handleMouseMove = (e: React.MouseEvent) => {
+    // 0. UPDATE VISUAL CURSOR (Always track, even if not clicking)
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      // Calculate percentage position exactly matching the game logic's coordinate system
+      const px = ((e.clientX - rect.left) / rect.width) * 100;
+      const py = ((e.clientY - rect.top) / rect.height) * 100;
+      setCursorPos({ x: px, y: py });
+    }
+
+    // Only process GAME LOGIC if dragging (left click held)
     if (e.buttons !== 1 || showLevelUp || !containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const px = ((e.clientX - rect.left) / rect.width) * 100;
     const py = ((e.clientY - rect.top) / rect.height) * 100;
 
-    // Find the closest untraced dot
+    // 1. BOUNDARY CHECK: Are we "on the line"?
+    // Calculate distance to the NEAREST dot (traced or untraced)
+    let minDistanceToShape = 100;
+    dots.forEach((dot) => {
+      const dist = Math.sqrt(Math.pow(dot.x - px, 2) + Math.pow(dot.y - py, 2));
+      if (dist < minDistanceToShape) minDistanceToShape = dist;
+    });
+
+    // Threshold for being "out of bounds". slightly larger than catch radius (8)
+    const MAX_DEVIATION = 12;
+
+    if (minDistanceToShape > MAX_DEVIATION) {
+      // User went off the path!
+      if (traced.length > 0) {
+        // Only fail if they had actually started tracing something
+        handleFail();
+      }
+      return;
+    }
+
+    // 2. TRACING LOGIC
+    // Find closest UNTRACED dot to catch
     let closestId = -1;
-    let minDist = 8; // Threshold distance for "catching" a dot
+    let minDist = 8; // Catch radius
 
     dots.forEach((dot) => {
       if (!traced.includes(dot.id)) {
@@ -94,6 +130,16 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
     }
   };
 
+  const handleFail = () => {
+    if (traced.length === 0) return; // Prevent spamming if already empty
+
+    audioService.playError(); // "Effection false sound"
+    setTraced([]); // "Restart game again" (reset round progress)
+
+    // Optional: Add visual shake effect logic here if needed, 
+    // but for now simple reset + sound meets requirement.
+  };
+
   const handleRoundComplete = () => {
     audioService.playSuccess();
     setShowLevelUp(true);
@@ -103,31 +149,26 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
     }, 2500);
   };
 
-  const shapeNames = ["រង្វង់ (CIRCLE)", "ការ៉េ (SQUARE)", "បេះដូង (HEART)"];
+  const handleMouseLeave = () => {
+    setCursorPos(null);
+  };
 
   return (
     <div className="relative w-full h-full bg-orange-50/30 flex flex-col items-center justify-center select-none overflow-hidden p-4">
-      {/* Round Indicator */}
-      <div className="absolute top-4 right-8 z-40 bg-orange-100/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-orange-200 shadow-sm">
-        <span className="text-orange-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="mb-6 z-20 text-center animate-pop-in">
-        <div className="inline-block bg-white/90 px-8 py-3 rounded-3xl border-2 border-orange-100 shadow-xl">
-          <h2 className="text-xl md:text-2xl font-black text-orange-800 tracking-tight leading-none uppercase">
-            ចុចឱ្យជាប់ហើយគូសតាមរូប! ({traced.length}/{dots.length})
-          </h2>
-          <div className="mt-1 text-[10px] font-black text-orange-400 tracking-[0.2em]">
-            {shapeNames[round - 1]}
-          </div>
-        </div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction={`គូសតាមរូប: ${shapeNames[round - 1]}`}
+        score={traced.length}
+        goal={dots.length}
+      />
 
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseMove}
-        className="relative w-72 h-72 md:w-[32rem] md:h-[32rem] flex-shrink flex items-center justify-center cursor-crosshair group"
+        onMouseLeave={handleMouseLeave}
+        className="relative w-72 h-72 md:w-[32rem] md:h-[32rem] flex-shrink flex items-center justify-center cursor-none group"
       >
         {/* Connection Path Guide */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100">
@@ -144,8 +185,46 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
           <div
             key={`${round}-${d.id}`}
             className={`absolute w-8 h-8 md:w-11 md:h-11 rounded-full transition-all duration-300 border-2 border-white shadow-md flex items-center justify-center ${traced.includes(d.id)
-                ? 'bg-orange-500 scale-110 z-10 shadow-orange-200'
-                : 'bg-orange-100 opacity-60 group-hover:opacity-100'
+              ? 'bg-orange-500 scale-110 z-10 shadow-orange-200'
+              : 'bg-orange-100 opacity-60 group-hover:opacity-100'
+              }`}
+            style={{ left: `${d.x}%`, top: `${d.y}%`, transform: 'translate(-50%, -50%)' }}
+          >
+            {traced.includes(d.id) && (
+              <span className="text-white text-xs animate-in zoom-in"></span>
+            )}
+          </div>
+        ))}
+
+        {/* Custom Cursor Follower within Container */}
+        {cursorPos && (
+          <div
+            className="absolute w-6 h-6 bg-cyan-400 rounded-full blur-[2px] pointer-events-none z-50 mix-blend-screen animate-pulse"
+            style={{
+              left: `${cursorPos.x}%`,
+              top: `${cursorPos.y}%`,
+              transform: 'translate(-50%, -50%)',
+              boxShadow: '0 0 15px 5px rgba(34, 211, 238, 0)'
+            }}
+          />
+        )}
+        {/* Connection Path Guide */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100">
+          <path
+            d={dots.map((d, i) => `${i === 0 ? 'M' : 'L'} ${d.x} ${d.y}`).join(' ') + (round === 1 || round === 3 ? ' Z' : '')}
+            fill="none"
+            stroke="orange"
+            strokeWidth="0.5"
+            strokeDasharray="2 2"
+          />
+        </svg>
+
+        {dots.map(d => (
+          <div
+            key={`${round}-${d.id}`}
+            className={`absolute w-8 h-8 md:w-11 md:h-11 rounded-full transition-all duration-300 border-2 border-white shadow-md flex items-center justify-center ${traced.includes(d.id)
+              ? 'bg-orange-500 scale-110 z-10 shadow-orange-200'
+              : 'bg-orange-100 opacity-60 group-hover:opacity-100'
               }`}
             style={{ left: `${d.x}%`, top: `${d.y}%`, transform: 'translate(-50%, -50%)' }}
           >
@@ -156,7 +235,7 @@ export const TraceShape: React.FC<{ onComplete: () => void; count?: number }> = 
         ))}
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-7xl md:text-9xl opacity-[0.03] font-black text-orange-950 uppercase tracking-tighter rotate-12 select-none">
+          <div className="text-4xl md:text-6xl opacity-[0.15] font-black text-orange-500 uppercase tracking-tighter rotate-10 select-none">
             {shapeNames[round - 1].split(' ')[0]}
           </div>
         </div>

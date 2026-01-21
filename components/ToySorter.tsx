@@ -1,6 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface ToySorterProps {
   onComplete: () => void;
@@ -102,14 +102,13 @@ const ToySorter: React.FC<ToySorterProps> = ({ onComplete, count = 3 }) => {
       onMouseLeave={handleEnd}
       className="relative w-full h-full bg-orange-50 overflow-hidden select-none flex flex-col items-center"
     >
-      {/* Round Indicator - Larger */}
-      <div className="absolute top-4 right-8 z-40 bg-orange-100/90 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-orange-200 shadow-sm">
-        <span className="text-orange-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="absolute top-10 bg-white/90 px-10 py-4 rounded-3xl border-2 border-orange-100 shadow-xl z-20">
-        <div className="text-xl md:text-3xl font-black text-orange-700">អូសប្រដាប់ក្មេងលេងចូលក្នុងប្រអប់! ({sortedCount}/{currentRoundTotal})</div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="អូសប្រដាប់ក្មេងលេងចូលក្នុងប្រអប់!"
+        score={sortedCount}
+        goal={currentRoundTotal}
+      />
 
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-40 md:w-64 h-24 md:h-40 bg-orange-200 border-4 border-orange-400 rounded-b-3xl flex flex-col items-center justify-end p-2 md:p-4 shadow-inner">
         <div className="text-3xl md:text-6xl">📦</div>

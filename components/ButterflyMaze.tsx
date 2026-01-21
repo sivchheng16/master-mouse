@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const ButterflyMaze: React.FC<{ onComplete: () => void; difficulty?: number }> = ({ onComplete, difficulty = 1.0 }) => {
   const [round, setRound] = useState(1);
@@ -65,43 +66,36 @@ export const ButterflyMaze: React.FC<{ onComplete: () => void; difficulty?: numb
 
   return (
     <div className="relative w-full h-full bg-yellow-50 flex flex-col items-center justify-center p-4 overflow-hidden select-none">
-      <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-yellow-200 shadow-sm">
-        <span className="text-yellow-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="absolute top-4 flex justify-center z-20 w-full px-4">
-        <div className="bg-white/90 px-8 py-3 rounded-3xl border-2 border-yellow-200 shadow-xl text-center">
-          <div className="text-xl md:text-2xl font-black text-yellow-900 tracking-tight leading-none">
-                    {failed ? 'អូស! ប៉ះជញ្ជាំងហើយ! ព្យាយាមម្តងទៀត' : !gameStarted ? 'ចាប់ផ្ដើមពីទង់ជាតិ! 🏁' : 'នាំមេអំបៅទៅរកផ្កា! 🌸'}
-
-          </div>
-        </div>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction={failed ? 'អូស! ប៉ះជញ្ជាំងហើយ! ព្យាយាមម្តងទៀត' : !gameStarted ? 'ចាប់ផ្ដើមពីទង់ជាតិ! 🏁' : 'នាំមេអំបៅទៅរកផ្កា! 🌸'}
+      />
 
 
       {/* <div className="absolute top-4 text-xl font-black text-yellow-900 text-center w-full uppercase z-20 pointer-events-none px-4  bg-white/90 px-8 py-3 rounded-3xl border-2 border-slate-200 shadow-xl">
       </div>
        */}
-      <div 
+      <div
         ref={containerRef}
         onMouseMove={gameStarted ? updateMousePosition : undefined}
         className="w-full max-w-2xl h-64 relative bg-yellow-400 rounded-[2.5rem] overflow-hidden border-8 border-yellow-500/30 shadow-inner"
       >
         <div onMouseEnter={handleWall} className="absolute inset-0 z-0 cursor-no-drop" />
-        
-        <div 
+
+        <div
           className="absolute left-0 right-0 top-1/2 -translate-y-1/2 bg-white flex items-center justify-between px-10 border-y-4 border-yellow-200 z-10"
           style={{ height: `${pathHeightPx}px` }}
           onMouseEnter={(e) => e.stopPropagation()}
         >
-          <div 
+          <div
             onMouseEnter={handleStart}
             className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl cursor-pointer transition-colors ${gameStarted ? 'bg-green-100 ring-4 ring-green-400' : 'bg-white shadow-md hover:bg-gray-50'}`}
           >
             🏁
           </div>
 
-          <div 
+          <div
             onMouseEnter={() => gameStarted && handleCompleteRound()}
             className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all shadow-lg ${gameStarted ? 'bg-emerald-400 cursor-pointer animate-pulse' : 'bg-gray-200 grayscale opacity-50'}`}
           >
@@ -110,7 +104,7 @@ export const ButterflyMaze: React.FC<{ onComplete: () => void; difficulty?: numb
         </div>
 
         {gameStarted && (
-          <div 
+          <div
             className="absolute pointer-events-none text-4xl z-30 transition-transform duration-75"
             style={{ left: mousePos.x, top: mousePos.y, transform: 'translate(-50%, -50%)' }}
           >

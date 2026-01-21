@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 8 }) => {
   const [round, setRound] = useState(1);
@@ -95,13 +96,13 @@ export const StarCatcher: React.FC<{ onComplete: () => void; count?: number }> =
       onMouseUp={handleMouseUp}
       className="relative w-full h-full bg-indigo-950 overflow-hidden cursor-crosshair select-none"
     >
-      <div className="absolute top-4 right-8 z-40 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 shadow-sm">
-        <span className="text-white font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
-
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white font-black uppercase text-sm tracking-widest text-center w-full z-10 pointer-events-none drop-shadow-md">
-        គូសប្រអប់ដើម្បីចាប់ផ្កាយទាំងអស់! ({caughtCount}/{currentCount})
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="គូសប្រអប់ដើម្បីចាប់ផ្កាយទាំងអស់!"
+        score={caughtCount}
+        goal={currentCount}
+      />
 
       {stars.map(s => (
         <div

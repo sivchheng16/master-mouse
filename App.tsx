@@ -40,7 +40,8 @@ import { GeckoHunt } from './components/GeckoHunt';
 import { Firecracker } from './components/Firecracker';
 import { BobaShake } from './components/BobaShake';
 import { PalmClimb } from './components/PalmClimb';
-import { HammockSwing } from './components/HammockSwing';
+import OfflineStatus from './components/OfflineStatus';
+import InstallPwa from './components/InstallPwa';
 
 const LEVELS_PER_CHAPTER = 17;
 const TOTAL_LEVELS = 102;
@@ -75,7 +76,8 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>("តើកូនរួចរាល់សម្រាប់លេងឬនៅ?");
   const [loading, setLoading] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  const [gameResetKey, setGameResetKey] = useState<number>(0);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -95,14 +97,6 @@ const App: React.FC = () => {
     }
 
     if (!tutorialDone) setShowTutorial(true);
-
-    const handleOnlineStatus = () => setIsOnline(navigator.onLine);
-    window.addEventListener('online', handleOnlineStatus);
-    window.addEventListener('offline', handleOnlineStatus);
-    return () => {
-      window.removeEventListener('online', handleOnlineStatus);
-      window.removeEventListener('offline', handleOnlineStatus);
-    };
   }, []);
 
   useEffect(() => {
@@ -162,6 +156,7 @@ const App: React.FC = () => {
       setMessage(msg);
       setLoading(false);
       setCurrentLevel(0);
+      setGameResetKey(0); // Reset key when leaving level
     });
   };
 
@@ -210,12 +205,28 @@ const App: React.FC = () => {
     return (
       <div className="fixed inset-0 z-[100] bg-black flex flex-col overflow-hidden">
         <nav className="h-16 border-b border-white/10 flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md">
-          <button
-            onClick={() => setCurrentLevel(0)}
-            className="text-white/60 hover:text-white transition-all hover:scale-110 active:scale-90"
-          >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setCurrentLevel(0);
+                setGameResetKey(0);
+              }}
+              className="text-white/60 hover:text-white transition-all hover:scale-110 active:scale-90"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <button
+              onClick={() => {
+                audioService.playPop();
+                setGameResetKey(prev => prev + 1);
+              }}
+              className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-110 active:scale-90 active:rotate-180 duration-500 border border-white/10"
+              title="លេងម្ដងទៀត"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+
           <div className="flex-1 px-8 md:px-24">
             <div className="h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
               <div
@@ -231,7 +242,7 @@ const App: React.FC = () => {
         </nav>
         <div className="flex-1 relative min-h-0">
           {(() => {
-            const props = { onComplete: handleLevelComplete, key: `game-${currentLevel}` };
+            const props = { onComplete: handleLevelComplete, key: `game-${currentLevel}-${gameResetKey}` };
             switch (type) {
               case GameType.CLICK: return <BalloonPop {...props} count={Math.floor(5 * factor)} />;
               case GameType.HOVER: return <MagicGarden {...props} count={Math.floor(8 * factor)} />;
@@ -270,7 +281,6 @@ const App: React.FC = () => {
               case GameType.FIRECRACKER: return <Firecracker {...props} count={Math.floor(5 * factor)} />;
               case GameType.BOBA_SHAKE: return <BobaShake {...props} count={Math.floor(3 * factor)} />;
               case GameType.PALM_CLIMB: return <PalmClimb {...props} count={Math.floor(3 * factor)} />;
-              case GameType.HAMMOCK_SWING: return <HammockSwing {...props} count={Math.floor(3 * factor)} />;
               default: return <BalloonPop {...props} />;
             }
           })()}
@@ -283,7 +293,12 @@ const App: React.FC = () => {
     <div className="flex h-screen bg-white overflow-hidden font-['Quicksand'] selection:bg-[#84d8ff]">
       <aside className="hidden md:flex w-20 lg:w-64 border-r-2 border-[#e5e5e5] flex-col p-4 shrink-0 overflow-y-auto">
         <div className="mb-10 px-4">
-          <h1 className="title-font text-[#58cc02] text-2xl lg:text-3xl tracking-tighter hover:scale-105 transition-transform cursor-default">កូនកណ្ដុរតូច</h1>
+          <h1
+            onClick={() => window.location.reload()}
+            className="title-font text-[#58cc02] text-2xl lg:text-3xl tracking-tighter hover:scale-105 transition-transform cursor-pointer"
+          >
+            កូនកណ្ដុរ
+          </h1>
         </div>
         <nav className="flex flex-col gap-2 flex-1">
           <SidebarItem icon="🏠" label="ទំព័រដើម" active={currentLevel === 0} onClick={() => setCurrentLevel(0)} />
@@ -454,8 +469,8 @@ const App: React.FC = () => {
       </aside>
 
       {showResetConfirm && (
-        <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200">
-          <div className="bg-white w-full max-md rounded-[3rem] p-8 text-center shadow-2xl border-b-8 border-[#e5e5e5] animate-in zoom-in duration-300">
+        <div className="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-200" onClick={() => setShowResetConfirm(false)}>
+          <div className="bg-white w-full max-w-md rounded-[3rem] p-8 text-center shadow-2xl border-b-8 border-[#e5e5e5] animate-in zoom-in duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="text-7xl mb-6">⚙️</div>
             <h2 className="title-font text-3xl text-[#4b4b4b] mb-4">កំណត់ឡើងវិញ?</h2>
             <p className="font-bold text-[#777] mb-8 leading-relaxed">តើកូនចង់លុបការរីកចម្រើនទាំងអស់ ហើយចាប់ផ្ដើមមេរៀនពីដំបូងឡើងវិញមែនទេ?</p>
@@ -477,6 +492,8 @@ const App: React.FC = () => {
         </div>
       )}
 
+      <OfflineStatus />
+      <InstallPwa />
     </div>
   );
 };

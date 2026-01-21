@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface NumberPopProps {
   onComplete: () => void;
@@ -10,7 +11,7 @@ export const NumberPop: React.FC<NumberPopProps> = ({ onComplete, total = 8 }) =
   const [round, setRound] = useState(1);
   const totalRounds = 3;
   const [next, setNext] = useState(1);
-  const [positions, setPositions] = useState<{x: number, y: number}[]>([]);
+  const [positions, setPositions] = useState<{ x: number, y: number }[]>([]);
   const [errorId, setErrorId] = useState<number | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,10 +19,10 @@ export const NumberPop: React.FC<NumberPopProps> = ({ onComplete, total = 8 }) =
   const currentTotal = total + (round - 1) * 4;
 
   const initRound = (r: number) => {
-    const newPositions: {x: number, y: number}[] = [];
+    const newPositions: { x: number, y: number }[] = [];
     const minDistance = 15;
     const count = total + (r - 1) * 4;
-    
+
     for (let i = 0; i < count; i++) {
       let x, y, tooClose;
       let attempts = 0;
@@ -84,50 +85,50 @@ export const NumberPop: React.FC<NumberPopProps> = ({ onComplete, total = 8 }) =
 
   return (
     <div key={`num-round-${round}`} className="relative w-full h-full bg-slate-50 overflow-hidden select-none flex flex-col">
-      <div className="absolute top-4 right-8 z-40 bg-white/60 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-sky-100 shadow-sm">
-        <span className="text-sky-900 font-black text-sm md:text-xl uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-      </div>
+      <GameHUD
+        round={round}
+        totalRounds={totalRounds}
+        instruction="ចុចលេខតាមលំដាប់:"
+      />
 
-      <div className="flex justify-center pt-6 z-20 shrink-0">
+      <div className="flex justify-center pt-20 z-20 shrink-0">
         <div className="bg-white/95 backdrop-blur-md border-2 border-sky-200 px-10 py-4 rounded-3xl shadow-xl flex items-center gap-6">
-           <span className="text-sky-900 font-black text-xl md:text-3xl uppercase tracking-tight">ចុចលេខតាមលំដាប់:</span>
-           <div className="w-12 h-12 md:w-16 md:h-16 bg-sky-500 rounded-full flex items-center justify-center border-b-8 border-sky-700">
-             <span className="text-white font-black text-2xl md:text-4xl">
-               {next <= currentTotal ? next : '🎉'}
-             </span>
-           </div>
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-sky-500 rounded-full flex items-center justify-center border-b-8 border-sky-700">
+            <span className="text-white font-black text-2xl md:text-4xl">
+              {next <= currentTotal ? next : '🎉'}
+            </span>
+          </div>
         </div>
       </div>
-      
+
       <div className="relative flex-1 w-full min-h-0">
         {positions.map((p, i) => {
           const num = i + 1;
           const isActive = num === next;
           const isDone = num < next;
           const isError = errorId === num;
-          
+
           return (
-            <div 
+            <div
               key={`num-${round}-${num}`}
               className={`absolute transition-all duration-300 ${isDone ? 'z-0' : (isActive || isError) ? 'z-30' : 'z-10'}`}
-              style={{ 
-                left: `${p.x}%`, 
-                top: `${p.y}%`, 
+              style={{
+                left: `${p.x}%`,
+                top: `${p.y}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             >
               <button
                 onClick={() => handleClick(num)}
                 disabled={isDone || showLevelUp}
-                className={`w-14 h-14 md:w-24 md:h-24 rounded-full text-2xl md:text-5xl font-black transition-all duration-300 border-4 flex flex-col items-center justify-center shadow-lg relative ${
-                  isDone 
-                    ? 'bg-emerald-100 text-emerald-400 border-emerald-200 scale-90 opacity-40' 
+                className={`w-14 h-14 md:w-24 md:h-24 rounded-full text-2xl md:text-5xl font-black transition-all duration-300 border-4 flex flex-col items-center justify-center shadow-lg relative ${isDone
+                    ? 'bg-emerald-100 text-emerald-400 border-emerald-200 scale-90 opacity-40'
                     : isError
                       ? 'bg-red-500 text-white border-white scale-110 animate-shake'
-                      : isActive 
-                        ? 'bg-orange-500 text-white border-white scale-110 shadow-orange-200 animate-wiggle ring-4 ring-orange-200' 
+                      : isActive
+                        ? 'bg-orange-500 text-white border-white scale-110 shadow-orange-200 animate-wiggle ring-4 ring-orange-200'
                         : 'bg-white text-sky-500 border-sky-50 hover:border-sky-300 hover:scale-105 active:scale-95'
-                }`}
+                  }`}
               >
                 <span>{num}</span>
                 {isDone && (

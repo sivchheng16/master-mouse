@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { audioService } from '../services/audioService';
+import { GameHUD } from './GameHUD';
 
 interface MarketItem {
     id: number;
@@ -127,10 +128,13 @@ export const MarketShop: React.FC<{ onComplete: () => void; count?: number }> = 
                 <h1 className="text-white font-black text-2xl md:text-4xl drop-shadow-lg">🏪 ផ្សារ</h1>
             </div>
 
-            {/* Round indicator */}
-            <div className="absolute top-4 right-8 z-40 bg-white/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-red-300 shadow-sm">
-                <span className="text-red-900 font-black text-xs uppercase tracking-widest">ជុំទី {round}/{totalRounds}</span>
-            </div>
+            <GameHUD
+                round={round}
+                totalRounds={totalRounds}
+                instruction="ទិញបន្លែតាមបញ្ជី!"
+                score={collected}
+                goal={currentCount}
+            />
 
             {/* Shopping list */}
             <div className="absolute top-[18%] left-4 bg-white/80 backdrop-blur-md p-4 rounded-2xl border-2 border-amber-300 shadow-lg z-30">
