@@ -286,7 +286,7 @@ export const PalmClimb: React.FC<{ onComplete: () => void; count?: number }> = (
                     transform: 'translate(-50%, -50%)'
                 }}
             >
-                <div className={`text-4xl md:text-5xl transition-transform duration-200 
+                <div className={`text-5xl md:text-6xl transition-transform duration-200 
                     ${climbingDirection !== 0 ? 'scale-x-90 scale-y-110' : 'scale-100'}
                 `} style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.6))' }}>
                     🧗

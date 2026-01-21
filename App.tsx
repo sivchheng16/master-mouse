@@ -22,23 +22,23 @@ import { WaterRefill } from './components/WaterRefill';
 import { SoapBubbles } from './components/SoapBubbles';
 // New Cambodian-themed games
 import { RicePlanting } from './components/RicePlanting';
-import { KhmerLetter } from './components/KhmerLetter';
+// import { KhmerLetter } from './components/KhmerLetter';
 import { NoodleMaker } from './components/NoodleMaker';
 import { WaterSplash } from './components/WaterSplash';
-import { ElephantMarch } from './components/ElephantMarch';
-import { TempleBuilder } from './components/TempleBuilder';
+// import { ElephantMarch } from './components/ElephantMarch';
+// import { TempleBuilder } from './components/TempleBuilder';
 import { FruitChop } from './components/FruitChop';
-import { KiteFlying } from './components/KiteFlying';
+// import { KiteFlying } from './components/KiteFlying';
 import { LotusBloom } from './components/LotusBloom';
 import { CoconutCatch } from './components/CoconutCatch';
-import { TukTukDriver } from './components/TukTukDriver';
+// import { TukTukDriver } from './components/TukTukDriver';
 import { MarketShop } from './components/MarketShop';
 import { FishPond } from './components/FishPond';
-import { BoatRace } from './components/BoatRace';
+// import { BoatRace } from './components/BoatRace';
 import { ColorApsara } from './components/ColorApsara';
-import { GeckoHunt } from './components/GeckoHunt';
+// import { GeckoHunt } from './components/GeckoHunt';
 import { Firecracker } from './components/Firecracker';
-import { BobaShake } from './components/BobaShake';
+// import { BobaShake } from './components/BobaShake';
 import { PalmClimb } from './components/PalmClimb';
 
 import InstallPwa from './components/InstallPwa';
@@ -76,8 +76,25 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>("តើកូនរួចរាល់សម្រាប់លេងឬនៅ?");
   const [loading, setLoading] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const progressCardRef = useRef<HTMLDivElement>(null);
 
   const [gameResetKey, setGameResetKey] = useState<number>(0);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (progressCardRef.current && !progressCardRef.current.contains(event.target as Node)) {
+        setShowLeaderboard(false);
+      }
+    }
+
+    if (showLeaderboard) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showLeaderboard]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -190,11 +207,13 @@ const App: React.FC = () => {
     );
 
     if (loading) return (
-      <div className="fixed inset-0 z-[200] bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
-        <div className="w-32 h-32 bg-[#ddf4ff] rounded-full flex items-center justify-center text-7xl animate-bounce mb-8 border-4 border-[#84d8ff]">🤖</div>
-        <h2 className="text-4xl font-black text-[#4b4b4b] mb-4">ពូកែណាស់!</h2>
-        <p className="text-[#afafaf] font-bold uppercase tracking-[0.2em]">កំពុងរៀបចំមេរៀនបន្ទាប់...</p>
-      </div>
+      setTimeout(() => {
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+          <div className="w-32 h-32 bg-[#ddf4ff] rounded-full flex items-center justify-center text-7xl animate-bounce mb-8 border-4 border-[#84d8ff]">🤖</div>
+          <h2 className="text-4xl font-black text-[#4b4b4b] mb-4">ពូកែណាស់!</h2>
+          <p className="text-[#afafaf] font-bold uppercase tracking-[0.2em]">កំពុងរៀបចំមេរៀនបន្ទាប់...</p>
+        </div>
+      }, (3000))
     );
 
     const type = levelMap[currentLevel - 1];
@@ -263,23 +282,23 @@ const App: React.FC = () => {
               case GameType.SIZE_WHEEL: return <BalloonSizer {...props} tolerance={Math.max(5, Math.floor(15 / factor))} />;
               // New Cambodian-themed games
               case GameType.RICE_PLANTING: return <RicePlanting {...props} count={Math.floor(6 * factor)} />;
-              case GameType.KHMER_LETTER: return <KhmerLetter {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.KHMER_LETTER: return <KhmerLetter {...props} count={Math.floor(3 * factor)} />;
               case GameType.NOODLE_MAKER: return <NoodleMaker {...props} count={Math.floor(4 * factor)} />;
               case GameType.WATER_SPLASH: return <WaterSplash {...props} count={Math.floor(5 * factor)} />;
-              case GameType.ELEPHANT_MARCH: return <ElephantMarch {...props} count={Math.floor(3 * factor)} />;
-              case GameType.TEMPLE_BUILDER: return <TempleBuilder {...props} count={Math.floor(5 * factor)} />;
+              // case GameType.ELEPHANT_MARCH: return <ElephantMarch {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.TEMPLE_BUILDER: return <TempleBuilder {...props} count={Math.floor(5 * factor)} />;
               case GameType.FRUIT_CHOP: return <FruitChop {...props} count={Math.floor(6 * factor)} />;
-              case GameType.KITE_FLYING: return <KiteFlying {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.KITE_FLYING: return <KiteFlying {...props} count={Math.floor(3 * factor)} />;
               case GameType.LOTUS_BLOOM: return <LotusBloom {...props} count={Math.floor(5 * factor)} />;
               case GameType.COCONUT_CATCH: return <CoconutCatch {...props} count={Math.floor(8 * factor)} />;
-              case GameType.TUK_TUK: return <TukTukDriver {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.TUK_TUK: return <TukTukDriver {...props} count={Math.floor(3 * factor)} />;
               case GameType.MARKET_SHOP: return <MarketShop {...props} count={Math.floor(5 * factor)} />;
               case GameType.FISH_POND: return <FishPond {...props} count={Math.floor(5 * factor)} />;
-              case GameType.BOAT_RACE: return <BoatRace {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.BOAT_RACE: return <BoatRace {...props} count={Math.floor(3 * factor)} />;
               case GameType.COLOR_APSARA: return <ColorApsara {...props} count={Math.floor(6 * factor)} />;
-              case GameType.GECKO_HUNT: return <GeckoHunt {...props} count={Math.floor(6 * factor)} />;
+              // case GameType.GECKO_HUNT: return <GeckoHunt {...props} count={Math.floor(6 * factor)} />;
               case GameType.FIRECRACKER: return <Firecracker {...props} count={Math.floor(5 * factor)} />;
-              case GameType.BOBA_SHAKE: return <BobaShake {...props} count={Math.floor(3 * factor)} />;
+              // case GameType.BOBA_SHAKE: return <BobaShake {...props} count={Math.floor(3 * factor)} />;
               case GameType.PALM_CLIMB: return <PalmClimb {...props} count={Math.floor(3 * factor)} />;
               default: return <BalloonPop {...props} />;
             }
@@ -306,12 +325,13 @@ const App: React.FC = () => {
           <SidebarItem icon="👤" label="គណនី" />
           <SidebarItem icon="⚙️" label="កំណត់" onClick={() => setShowResetConfirm(true)} />
         </nav>
-        <div className="mt-auto border-t-2 border-[#e5e5e5] pt-4 px-2">
-          <div className="flex items-center gap-3 bg-[#f7f7f7] p-3 rounded-2xl border-2 border-[#e5e5e5] group cursor-default">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-sm border border-[#e5e5e5] group-hover:scale-110 transition-transform">🤖</div>
+        <div className="mt-auto border-t-2 border-[#e5e5e5] pt-3 px-1">
+          <div className="flex items-center gap-3 bg-[#f7f7f7] px-3 py-2 rounded-2xl border-2 border-[#e5e5e5] group cursor-default">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm border-2 border-slate-200 group-hover:scale-110 transition-transform overflow-hidden bg-slate-500">
+              <img src="./koompi.png" alt="Koompi" className="w-6 h-6 object-contain filter brightness-0 invert" />
+            </div>
             <div className="hidden lg:block overflow-hidden">
-              <p className="text-[10px] font-black text-[#afafaf] uppercase tracking-widest leading-none mb-1">Botsky</p>
-              <p className="text-xs font-bold text-[#4b4b4b] truncate">{message}</p>
+              <p className="text-[15px] font-black text-gray-600 uppercase tracking-widest leading-none border-l-2 p-2 border-[#C0C0C0]">KOOMPI-APP</p>
             </div>
           </div>
         </div>
@@ -329,12 +349,12 @@ const App: React.FC = () => {
                       <h2 className="title-font text-2xl md:text-4xl leading-tight mb-2">{chapter.name}</h2>
                       <p className="font-bold text-white/90 text-sm md:text-base">{chapter.objective}</p>
                     </div>
-                    <button
+                    {/* <button
                       onClick={() => scrollToLevel(chapterIdx * LEVELS_PER_CHAPTER + 1)}
                       className="bg-white/20 hover:bg-white/30 p-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider transition-all border-b-4 border-black/20 shrink-0"
                     >
                       🚀 ចុចទៅទីនេះ
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 
@@ -407,27 +427,53 @@ const App: React.FC = () => {
       </main>
 
       <aside className="hidden xl:flex w-80 border-l-2 border-[#e5e5e5] flex-col p-6 gap-6 shrink-0 overflow-y-auto bg-[#fafafa]/50">
-        <div className="flex gap-4 justify-between bg-white border-2 border-[#e5e5e5] p-5 rounded-3xl shadow-sm">
-          <div className="flex flex-col items-center gap-1 flex-1">
-            <span className="text-2xl">🔥</span>
-            <span className="font-black text-[#ff9600] text-lg">0</span>
-            <span className="text-[10px] font-bold text-[#afafaf] uppercase">ថ្ងៃ</span>
+
+
+        <div className="flex flex-col gap-6 bg-white border-2 border-[#e5e5e5] p-5 rounded-3xl shadow-sm">
+          {/* User Account Block */}
+          <div className="flex items-center gap-4 rounded-2xl p-4 bg-[#ddf4ff] border-2 border-[#84d8ff] shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center border-2 border-[#84d8ff] text-2xl shadow-sm">
+              <span className="text-[#1cb0f6] drop-shadow-sm">👤</span>
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-black text-[#4b4b4b] text-ml leading-tight">អ្នក (You)</h3>
+              <p className="text-xs font-bold text-[#1899d6] uppercase tracking-wider opacity-80">គណនី</p>
+            </div>
           </div>
-          <div className="w-px bg-[#e5e5e5] h-10 self-center" />
-          <div className="flex flex-col items-center gap-1 flex-1">
-            <span className="text-2xl">💎</span>
-            <span className="font-black text-[#1cb0f6] text-lg">{completedLevels.size * 50}</span>
-            <span className="text-[10px] font-bold text-[#afafaf] uppercase">រង្វាន់</span>
-          </div>
-          <div className="w-px bg-[#e5e5e5] h-10 self-center" />
-          <div className="flex flex-col items-center gap-1 flex-1">
-            <span className="text-2xl">❤️</span>
-            <span className="font-black text-[#ff4b4b] text-lg">5</span>
-            <span className="text-[10px] font-bold text-[#afafaf] uppercase">បេះដូង</span>
+
+          {/* Stats Block */}
+          <div className="flex justify-between items-center px-2">
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <span className="text-3xl filter drop-shadow-sm">⚡</span>
+              <div className="text-center">
+                <span className="block font-black text-[#ff9600] text-xl leading-none">{completedLevels.size * 100}</span>
+                <span className="text-[10px] font-bold text-[#afafaf] uppercase tracking-wider">XP</span>
+              </div>
+            </div>
+            <div className="w-0.5 bg-[#f0f0f0] h-12 rounded-full" />
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <span className="text-3xl filter drop-shadow-sm">💎</span>
+              <div className="text-center">
+                <span className="block font-black text-[#1cb0f6] text-xl leading-none">{completedLevels.size * 50}</span>
+                <span className="text-[10px] font-bold text-[#afafaf] uppercase tracking-wider">រង្វាន់</span>
+              </div>
+            </div>
+            <div className="w-0.5 bg-[#f0f0f0] h-12 rounded-full" />
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <span className="text-3xl filter drop-shadow-sm">❤️</span>
+              <div className="text-center">
+                <span className="block font-black text-[#ff4b4b] text-xl leading-none">5</span>
+                <span className="text-[10px] font-bold text-[#afafaf] uppercase tracking-wider">បេះដូង</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white border-2 border-[#e5e5e5] p-6 rounded-3xl shadow-sm">
+
+        <div
+          ref={progressCardRef}
+          className="bg-white border-2 border-[#e5e5e5] p-6 rounded-3xl shadow-sm transition-all duration-300"
+        >
           <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest mb-5">ការរីកចម្រើនសរុប</h4>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between text-xs font-black text-[#afafaf] uppercase">
@@ -442,29 +488,37 @@ const App: React.FC = () => {
             </div>
             <p className="text-[10px] font-bold text-[#afafaf] italic text-center">កូនកំពុងធ្វើបានយ៉ាងអស្ចារ្យ!</p>
           </div>
-        </div>
 
-        <div className="bg-white border-2 border-[#e5e5e5] p-6 rounded-3xl shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest">ចំណាត់ថ្នាក់</h4>
-            <button className="text-[#1cb0f6] font-black text-[10px] uppercase hover:underline">មើលទាំងអស់</button>
-          </div>
-          <div className="flex flex-col gap-5">
-            {[
-              { name: "កូនខ្លា", xp: 5250, icon: "🐯", me: false },
-              { name: "បងនាគ", xp: 4850, icon: "🐲", me: false },
-              { name: "អ្នក (You)", xp: completedLevels.size * 100, icon: "🤖", me: true }
-            ].sort((a, b) => b.xp - a.xp).map((user, i) => (
-              <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${user.me ? 'bg-[#ddf4ff] border-2 border-[#84d8ff]' : 'border-2 border-transparent hover:bg-gray-50'}`}>
-                <span className={`font-black w-5 text-center ${i === 0 ? 'text-[#ffc800]' : 'text-[#afafaf]'}`}>{i + 1}</span>
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#e5e5e5] text-xl shadow-sm">{user.icon}</div>
-                <div className="flex-1 overflow-hidden">
-                  <p className={`text-sm font-black truncate leading-none mb-1 ${user.me ? 'text-[#1899d6]' : 'text-[#4b4b4b]'}`}>{user.name}</p>
-                  <p className="text-[10px] text-[#afafaf] font-black uppercase tracking-wider">{user.xp} XP</p>
-                </div>
+          {showLeaderboard && (
+            <div className="mt-8 pt-6 border-t-2 border-[#e5e5e5] animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="font-black text-[#4b4b4b] uppercase text-xs tracking-widest">ចំណាត់ថ្នាក់</h4>
               </div>
-            ))}
-          </div>
+              <div className="flex flex-col gap-5">
+                {[
+                  { name: "កូនខ្លា", xp: 5250, icon: "🐯", me: false },
+                  { name: "បងនាគ", xp: 4850, icon: "🐲", me: false },
+                  { name: "អ្នក (You)", xp: completedLevels.size * 100, icon: "👤", me: true }
+                ].sort((a, b) => b.xp - a.xp).map((user, i) => (
+                  <div key={i} className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${user.me ? 'bg-[#ddf4ff] border-2 border-[#84d8ff]' : 'border-2 border-transparent hover:bg-gray-50'}`}>
+                    <span className={`font-black w-5 text-center ${i === 0 ? 'text-[#ffc800]' : 'text-[#afafaf]'}`}>{i + 1}</span>
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#e5e5e5] text-xl shadow-sm">{user.icon}</div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className={`text-xs  font-black truncate leading-none pb-1 ${user.me ? 'text-[#1899d6]' : 'text-[#4b4b4b]'}`}>{user.name}</p>
+                      <p className="text-[10px] text-[#afafaf] font-black uppercase tracking-wider">{user.xp} XP</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowLeaderboard(!showLeaderboard)}
+            className="w-full mt-6 py-2 text-[#1cb0f6] font-black text-xs uppercase tracking-widest hover:bg-[#1cb0f6]/10 rounded-xl transition-colors"
+          >
+            {showLeaderboard ? 'លាក់' : 'មើលបន្ថែម'}
+          </button>
         </div>
       </aside>
 

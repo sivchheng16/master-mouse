@@ -1,225 +1,320 @@
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { audioService } from '../services/audioService';
 import { GameHUD } from './GameHUD';
 
-interface Block {
-    id: number;
-    type: 'base' | 'middle' | 'top' | 'tower';
+interface Position {
     x: number;
     y: number;
-    placed: boolean;
-    targetX: number;
-    targetY: number;
 }
 
-export const TempleBuilder: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 5 }) => {
-    const [round, setRound] = useState(1);
-    const totalRounds = 3;
-    const [blocks, setBlocks] = useState<Block[]>([]);
-    const [dragging, setDragging] = useState<number | null>(null);
-    const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-    const [placed, setPlaced] = useState(0);
-    const [showLevelUp, setShowLevelUp] = useState(false);
+// Grid Size
+const GRID_SIZE = 20;
+const CELL_SIZE = 25; // Adjusted for better visibility
+
+// Level Config
+const LEVELS = [
+    { id: 1, speed: 200, target: 5, name: 'កម្រិត ១: ចាប់ផ្តើម' },
+    { id: 2, speed: 150, target: 10, name: 'កម្រិត ២: លឿនជាងមុន' },
+    { id: 3, speed: 100, target: 15, name: 'កម្រិត ៣: កំពូលអ្នកលេង' },
+];
+
+export const TempleBuilder: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete }) => {
+    // Game State
+    const [level, setLevel] = useState(1);
+    const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }]);
+    const [food, setFood] = useState<Position>({ x: 5, y: 5 });
+    const [direction, setDirection] = useState<Position>({ x: 1, y: 0 }); // Moving Right initially
+    const [score, setScore] = useState(0);
+    const [gameState, setGameState] = useState<'playing' | 'gameover' | 'level_complete' | 'won'>('playing');
+
+    // Refs for mutable state in the loop
+    const directionRef = useRef<Position>({ x: 1, y: 0 });
+    const snakeRef = useRef<Position[]>([{ x: 10, y: 10 }]);
+    const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const currentCount = count + (round - 1) * 2;
+    const currentLevelConfig = LEVELS[level - 1];
 
-    const initRound = (r: number) => {
-        const numBlocks = count + (r - 1) * 2;
-        const newBlocks: Block[] = [];
+    // --- GAME LOGIC ---
 
-        for (let i = 0; i < numBlocks; i++) {
-            const type = i < 2 ? 'base' : i < 4 ? 'middle' : i < 6 ? 'top' : 'tower';
-            newBlocks.push({
-                id: i,
-                type,
-                x: 10 + (i % 4) * 22,
-                y: 75 + Math.floor(i / 4) * 12,
-                placed: false,
-                targetX: 50 + (i % 2 - 0.5) * 12,
-                targetY: 60 - Math.floor(i / 2) * 10,
-            });
+    const spawnFood = useCallback((currentSnake: Position[]) => {
+        let newFood: Position;
+        let isCollision;
+        do {
+            isCollision = false;
+            newFood = {
+                x: Math.floor(Math.random() * GRID_SIZE),
+                y: Math.floor(Math.random() * GRID_SIZE)
+            };
+            // Check if food spawns on snake
+            for (const segment of currentSnake) {
+                if (segment.x === newFood.x && segment.y === newFood.y) {
+                    isCollision = true;
+                    break;
+                }
+            }
+        } while (isCollision);
+        setFood(newFood);
+    }, []);
+
+    const resetLevel = useCallback((lvl: number) => {
+        setSnake([{ x: 10, y: 10 }]);
+        snakeRef.current = [{ x: 10, y: 10 }];
+        setDirection({ x: 1, y: 0 });
+        directionRef.current = { x: 1, y: 0 };
+        setScore(0);
+        setGameState('playing');
+        spawnFood([{ x: 10, y: 10 }]);
+    }, [spawnFood]);
+
+    const gameOver = () => {
+        setGameState('gameover');
+        audioService.playError();
+        if (gameLoopRef.current) clearInterval(gameLoopRef.current);
+    };
+
+    const handleWin = () => {
+        setGameState('won');
+        audioService.playSuccess();
+        if (gameLoopRef.current) clearInterval(gameLoopRef.current);
+        setTimeout(onComplete, 2000);
+    };
+
+    const handleLevelComplete = useCallback(() => {
+        setGameState('level_complete');
+        audioService.playSuccess();
+        if (gameLoopRef.current) clearInterval(gameLoopRef.current);
+
+        setTimeout(() => {
+            if (level < LEVELS.length) {
+                setLevel(l => l + 1);
+            } else {
+                handleWin();
+            }
+        }, 2000);
+    }, [level]);
+
+    // Use Effect for handling level changes state after timeout
+    useEffect(() => {
+        if (gameState === 'level_complete') {
+            const timer = setTimeout(() => {
+                if (level <= LEVELS.length && gameState !== 'won') {
+                    resetLevel(level);
+                }
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [level, gameState, resetLevel]);
+
+
+    const moveSnake = useCallback(() => {
+        if (gameState !== 'playing') return;
+
+        const head = snakeRef.current[0];
+        const newHead = {
+            x: head.x + directionRef.current.x,
+            y: head.y + directionRef.current.y
+        };
+
+        // 1. Check Wall Collision
+        if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
+            gameOver();
+            return;
         }
 
-        setBlocks(newBlocks);
-        setPlaced(0);
-    };
-
-    useEffect(() => {
-        if (!showLevelUp) initRound(round);
-    }, [round, count, showLevelUp]);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (dragging === null || !containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        setDragPos({
-            x: ((e.clientX - rect.left) / rect.width) * 100,
-            y: ((e.clientY - rect.top) / rect.height) * 100,
-        });
-    };
-
-    const handleMouseUp = () => {
-        if (dragging === null) return;
-
-        const block = blocks.find(b => b.id === dragging);
-        if (!block) return;
-
-        // Check if dropped near target position
-        const dist = Math.hypot(dragPos.x - block.targetX, dragPos.y - block.targetY);
-
-        if (dist < 15) {
-            audioService.playPop();
-            setBlocks(prev => prev.map(b =>
-                b.id === dragging ? { ...b, placed: true, x: b.targetX, y: b.targetY } : b
-            ));
-
-            const newPlaced = placed + 1;
-            setPlaced(newPlaced);
-
-            if (newPlaced === currentCount) {
-                if (round < totalRounds) {
-                    handleRoundComplete();
-                } else {
-                    setTimeout(() => {
-                        audioService.playSuccess();
-                        onComplete();
-                    }, 800);
-                }
+        // 2. Check Self Collision
+        for (const segment of snakeRef.current) {
+            if (newHead.x === segment.x && newHead.y === segment.y) {
+                gameOver();
+                return;
             }
         }
 
-        setDragging(null);
-    };
+        // 3. Move
+        const newSnake = [newHead, ...snakeRef.current];
 
-    const handleRoundComplete = () => {
-        audioService.playSuccess();
-        setShowLevelUp(true);
-        setTimeout(() => {
-            setShowLevelUp(false);
-            setRound(r => r + 1);
-        }, 2000);
-    };
+        // 4. Check Food
+        if (newHead.x === food.x && newHead.y === food.y) {
+            audioService.playPop();
+            const newScore = score + 1;
+            setScore(newScore);
 
-    const getBlockEmoji = (type: string) => {
-        switch (type) {
-            case 'base': return '🧱';
-            case 'middle': return '🪨';
-            case 'top': return '🏛️';
-            case 'tower': return '🗼';
-            default: return '🧱';
+            if (newScore >= currentLevelConfig.target) {
+                handleLevelComplete();
+                return; // Stop processing grid logic
+            }
+
+            spawnFood(newSnake);
+            // Don't pop the tail, so it grows
+        } else {
+            newSnake.pop(); // Remove tail
+        }
+
+        snakeRef.current = newSnake;
+        setSnake(newSnake);
+    }, [food, score, currentLevelConfig, gameState, handleLevelComplete, spawnFood]);
+
+    // --- GAME LOOP ---
+    useEffect(() => {
+        if (gameState === 'playing') {
+            gameLoopRef.current = setInterval(moveSnake, currentLevelConfig.speed);
+        }
+        return () => {
+            if (gameLoopRef.current) clearInterval(gameLoopRef.current);
+        };
+    }, [gameState, level, moveSnake, currentLevelConfig.speed]);
+
+
+    // --- MOUSE CONTROL ---
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (gameState !== 'playing' || !containerRef.current) return;
+
+        // Get Grid Center relative to viewport
+        // Ideally we want direction relative to the SNAKE HEAD
+        // But for standard grid snake, usually 4 directions.
+        // Let's implement relative to snake head for intuitive "follow" feel.
+
+        const rect = containerRef.current.getBoundingClientRect();
+
+        // Calculate Grid rendering offsets (centering the grid in the div)
+        // The grid is GRID_SIZE * CELL_SIZE px wide/high
+        const gridPixelSize = GRID_SIZE * CELL_SIZE;
+        const offsetX = (rect.width - gridPixelSize) / 2;
+        const offsetY = (rect.height - gridPixelSize) / 2;
+
+        // Snake Head Screen Position
+        const head = snake[0];
+        const headScreenX = rect.left + offsetX + (head.x * CELL_SIZE) + (CELL_SIZE / 2);
+        const headScreenY = rect.top + offsetY + (head.y * CELL_SIZE) + (CELL_SIZE / 2);
+
+        const dx = e.clientX - headScreenX;
+        const dy = e.clientY - headScreenY;
+
+        // Determine dominant axis
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Horizontal
+            const newDirX = dx > 0 ? 1 : -1;
+            // Prevent 180 degree turns
+            if (directionRef.current.x !== -newDirX) {
+                directionRef.current = { x: newDirX, y: 0 };
+            }
+        } else {
+            // Vertical
+            const newDirY = dy > 0 ? 1 : -1;
+            if (directionRef.current.y !== -newDirY) {
+                directionRef.current = { x: 0, y: newDirY };
+            }
         }
     };
+
+    // Safety check for init
+    useEffect(() => {
+        resetLevel(1);
+    }, []);
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full overflow-hidden select-none"
+            className="relative w-full h-full overflow-hidden select-none bg-stone-900"
             onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
             style={{
-                background: 'linear-gradient(180deg, #ff9966 0%, #ff5e62 30%, #2d5016 70%, #1a3009 100%)',
+                backgroundImage: 'url("temple-sunset.png")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
             }}
         >
-            {/* Sun setting */}
-            <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-32 h-32 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full shadow-[0_0_100px_rgba(255,150,0,0.8)]" />
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
             <GameHUD
-                round={round}
-                totalRounds={totalRounds}
-                instruction="សង់ប្រាសាទអង្គរ! 🏛️"
-                score={placed}
-                goal={currentCount}
+                round={level}
+                totalRounds={LEVELS.length}
+                instruction={gameState === 'playing' ? "ដឹកនាំពស់ទៅរកចំណី! 🍎" : "បញ្ចប់!"}
+                score={score}
+                goal={currentLevelConfig.target}
             />
 
-            {/* Temple building area */}
-            <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2">
-                {/* Foundation */}
-                <div className="w-48 h-8 bg-gradient-to-b from-stone-600 to-stone-800 rounded-t-lg border-4 border-stone-900 shadow-2xl" />
-
-                {/* Target spots visualization */}
-                {blocks.map(block => !block.placed && (
-                    <div
-                        key={`target-${block.id}`}
-                        className="absolute w-12 h-12 border-4 border-dashed border-stone-400/50 rounded-lg"
-                        style={{
-                            left: `${block.targetX - 50 + 24}%`,
-                            top: `${block.targetY - 45}%`,
-                            transform: 'translate(-50%, -50%)',
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Placed blocks */}
-            {blocks.filter(b => b.placed).map(block => (
+            {/* GAME BOARD */}
+            <div
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/30 border-4 border-stone-500/50 rounded-xl shadow-2xl backdrop-blur-sm"
+                style={{
+                    width: GRID_SIZE * CELL_SIZE,
+                    height: GRID_SIZE * CELL_SIZE,
+                }}
+            >
+                {/* Grid Lines (Optional, subtle) */}
                 <div
-                    key={`placed-${block.id}`}
-                    className="absolute text-4xl md:text-5xl transition-all duration-300 drop-shadow-xl"
+                    className="absolute inset-0 opacity-10 pointer-events-none"
                     style={{
-                        left: `${block.targetX}%`,
-                        top: `${block.targetY}%`,
-                        transform: 'translate(-50%, -50%)',
+                        backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+                        backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`
+                    }}
+                />
+
+                {/* FOOD */}
+                <div
+                    className="absolute transition-all duration-300 animate-bounce"
+                    style={{
+                        left: food.x * CELL_SIZE,
+                        top: food.y * CELL_SIZE,
+                        width: CELL_SIZE,
+                        height: CELL_SIZE,
+                        fontSize: `${CELL_SIZE - 2}px`,
+                        lineHeight: `${CELL_SIZE}px`,
+                        textAlign: 'center'
                     }}
                 >
-                    {getBlockEmoji(block.type)}
+                    🍎
                 </div>
-            ))}
 
-            {/* Blocks to drag */}
-            <div className="absolute bottom-0 left-0 right-0 h-[30%] bg-gradient-to-t from-stone-900/80 to-transparent">
-                <div className="absolute inset-x-4 top-4 bg-stone-800/50 backdrop-blur-md rounded-3xl p-4 border-2 border-stone-600">
-                    <p className="text-center text-stone-300 font-bold mb-2">ថ្មសាងសង់:</p>
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {blocks.filter(b => !b.placed).map(block => (
-                            <div
-                                key={block.id}
-                                className={`cursor-grab active:cursor-grabbing transition-transform ${dragging === block.id ? 'scale-125 opacity-50' : 'hover:scale-110'
-                                    }`}
-                                style={{
-                                    position: dragging === block.id ? 'fixed' : 'relative',
-                                    left: dragging === block.id ? `${dragPos.x}%` : 'auto',
-                                    top: dragging === block.id ? `${dragPos.y}%` : 'auto',
-                                    transform: dragging === block.id ? 'translate(-50%, -50%)' : undefined,
-                                    zIndex: dragging === block.id ? 100 : 1,
-                                }}
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    setDragging(block.id);
-                                    audioService.playHover();
-                                }}
-                            >
-                                <div className="text-4xl md:text-5xl drop-shadow-lg">{getBlockEmoji(block.type)}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                {/* SNAKE */}
+                {snake.map((segment, i) => {
+                    const isHead = i === 0;
+                    return (
+                        <div
+                            key={`${segment.x}-${segment.y}-${i}`}
+                            className={`absolute rounded-sm transition-all duration-75 ${isHead ? 'z-10 bg-green-400 scale-110' : 'z-0 bg-green-600'}`}
+                            style={{
+                                left: segment.x * CELL_SIZE,
+                                top: segment.y * CELL_SIZE,
+                                width: CELL_SIZE - 2,
+                                height: CELL_SIZE - 2,
+                                margin: 1, // small gap between segments
+                                boxShadow: isHead ? '0 0 10px #4ade80' : 'none',
+                                borderRadius: isHead ? '50%' : '4px'
+                            }}
+                        >
+                            {isHead && (
+                                <div className="absolute inset-0 flex items-center justify-center text-[10px]">
+                                    👀
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* Decorative trees */}
-            <div className="absolute bottom-[25%] left-8 text-5xl opacity-80">🌴</div>
-            <div className="absolute bottom-[25%] right-8 text-5xl opacity-80">🌴</div>
-
-            {/* Level up modal */}
-            {showLevelUp && (
-                <div className="absolute inset-0 flex items-center justify-center bg-stone-900/60 backdrop-blur-md z-[100] animate-in fade-in zoom-in duration-500">
-                    <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl border-8 border-orange-200 text-center">
-                        <h2 className="title-font text-5xl text-orange-600 animate-bounce mb-4">អស្ចារ្យ!</h2>
-                        <p className="text-xl font-black text-stone-700">ប្រាសាទធំជាង! 🏛️</p>
+            {/* OVERLAYS */}
+            {gameState === 'gameover' && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-50 animate-in fade-in">
+                    <div className="bg-white p-8 rounded-3xl text-center space-y-4 shadow-2xl border-4 border-red-500">
+                        <h2 className="text-4xl font-black text-red-500">ចប់ហើយ! 😢</h2>
+                        <button
+                            onClick={() => resetLevel(level)}
+                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-xl transition-transform hover:scale-105"
+                        >
+                            លេងម្តងទៀត
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Completion */}
-            {round === totalRounds && placed === currentCount && !showLevelUp && (
-                <div className="absolute inset-0 flex items-center justify-center bg-orange-900/30 backdrop-blur-md z-50 animate-in fade-in zoom-in duration-500">
-                    <div className="bg-white/90 p-12 rounded-[3.5rem] shadow-2xl border-8 border-white text-center">
-                        <h2 className="title-font text-5xl text-orange-600 animate-bounce mb-6">ប្រាសាទស្អាតណាស់! 🎉</h2>
-                        <div className="flex justify-center gap-4 text-5xl">
-                            <span className="animate-pulse">🏛️</span>
-                            <span className="animate-bounce">✨</span>
-                            <span className="animate-pulse">🏛️</span>
-                        </div>
+            {gameState === 'level_complete' && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-50 animate-in fade-in">
+                    <div className="bg-white p-12 rounded-[3rem] text-center border-8 border-green-500 animate-in zoom-in">
+                        <h2 className="text-6xl mb-4">🎉</h2>
+                        <h3 className="text-4xl font-black text-green-600 mb-2">ឆ្លងកម្រិត!</h3>
+                        <p className="text-xl text-gray-500 font-bold">កម្រិតបន្ទាប់...</p>
                     </div>
                 </div>
             )}

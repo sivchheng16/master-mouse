@@ -1,9 +1,9 @@
 
 # Master Mouse Adventure
 
-<div align="center">
+<!-- <div align="center">
   <img src="public/wall-lamp-v3.png" alt="Master Mouse Adventure Banner" width="100%" />
-</div>
+</div> -->
 
 ## 🎮 About The Game
 

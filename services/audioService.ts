@@ -46,6 +46,22 @@ class AudioService {
     this.createOscillator(800, 'sine', 0.1, 0.2, null, 200);
   }
 
+  playExplosion() {
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // Low frequency rumble
+    this.createOscillator(100, 'sawtooth', 0.4, 0.4, now, 10);
+    this.createOscillator(80, 'square', 0.4, 0.3, now, 5);
+
+    // Noise burst simulation using random frequencies
+    [100, 200, 300, 400].forEach((f, i) => {
+      const offset = Math.random() * 0.05;
+      this.createOscillator(f + Math.random() * 100, 'sawtooth', 0.2, 0.2, now + offset, 50);
+    });
+  }
+
   playHover() {
     this.createOscillator(900, 'sine', 0.03, 0.03);
   }
@@ -108,14 +124,14 @@ class AudioService {
     // C4, E4, G4, C5 (Major arpeggio)
     const freqs = [261.63, 329.63, 392.00, 523.25];
     const freq = freqs[index % freqs.length];
-    
+
     this.init();
     if (!this.ctx) return;
-    
+
     // Simple piano synthesis using triangle wave with harmonics
     const now = this.ctx.currentTime;
     const duration = 0.6;
-    
+
     const playHarmonic = (f: number, g: number) => {
       const osc = this.ctx!.createOscillator();
       const gain = this.ctx!.createGain();
