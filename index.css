@@ -17,7 +17,16 @@
 }
 
 :root {
-  font-family: 'Quicksand', sans-serif;
+  /* Default sans-serif fallback */
+  font-family: sans-serif;
+}
+
+.font-km {
+  font-family: 'Kantumruy Pro', sans-serif;
+}
+
+.font-en {
+  font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -255,9 +264,19 @@ body {
 .chapter-card-shadow {
   box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.18), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
 }
+
 @keyframes scroll-down-indicator {
-  0%, 100% { transform: translateY(0); opacity: 0.6; }
-  50% { transform: translateY(10px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translateY(10px);
+    opacity: 1;
+  }
 }
 
 .animate-scroll-down {
@@ -265,9 +284,20 @@ body {
 }
 
 @keyframes start-shine {
-  0% { text-shadow: 0 0 10px rgba(255,255,255,0.1); opacity: 0.2; }
-  50% { text-shadow: 0 0 30px rgba(255,255,255,0.4); opacity: 0.4; }
-  100% { text-shadow: 0 0 10px rgba(255,255,255,0.1); opacity: 0.2; }
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    opacity: 0.2;
+  }
+
+  50% {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+    opacity: 0.4;
+  }
+
+  100% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    opacity: 0.2;
+  }
 }
 
 .animate-start-shine {

@@ -8,6 +8,7 @@ interface GameHUDProps {
     score?: number;
     goal?: number;
     customContent?: React.ReactNode;
+    actionType?: string;
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({
@@ -17,7 +18,8 @@ export const GameHUD: React.FC<GameHUDProps> = ({
     progress,
     score,
     goal,
-    customContent
+    customContent,
+    actionType
 }) => {
     return (
         <>
@@ -46,6 +48,17 @@ export const GameHUD: React.FC<GameHUDProps> = ({
                     <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-lg">
                         <span className="text-white font-bold text-sm md:text-lg tracking-wider drop-shadow-md">
                             ជុំទី {round}/{totalRounds}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {/* Action Badge - Bottom Right */}
+            {actionType && (
+                <div className="absolute bottom-4 right-8 z-40 pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <div className="bg-black/40 backdrop-blur-md px-4 py-1 rounded-full border border-white/20 shadow-lg">
+                        <span className="text-white text-xs md:text-lg tracking-wider drop-shadow-md uppercase ">
+                            {actionType}
                         </span>
                     </div>
                 </div>

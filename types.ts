@@ -43,3 +43,8 @@ export interface GameState {
   highestLevel: number;
   isMenuOpen: boolean;
 }
+
+export interface LevelHistory {
+  level: number;
+  completedAt: string;
+}

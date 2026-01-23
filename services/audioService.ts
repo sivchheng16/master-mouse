@@ -1,5 +1,21 @@
 class AudioService {
   private ctx: AudioContext | null = null;
+  private muted: boolean = false;
+
+  constructor() {
+    const savedMuted = localStorage.getItem('mouse_master_muted');
+    this.muted = savedMuted === 'true';
+  }
+
+  toggleMute() {
+    this.muted = !this.muted;
+    localStorage.setItem('mouse_master_muted', String(this.muted));
+    return this.muted;
+  }
+
+  isMuted() {
+    return this.muted;
+  }
 
   private init() {
     if (!this.ctx) {
@@ -19,6 +35,8 @@ class AudioService {
     startTime: number | null = null,
     endFreq: number | null = null
   ) {
+    if (this.muted) return;
+
     this.init();
     if (!this.ctx) return;
 
