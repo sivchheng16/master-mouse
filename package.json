@@ -7,11 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "electron:build": "npm run build && electron-builder"
+    "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "electron:start": "electron ."
   },
   "main": "electron/main.js",
-  "author": "Koompi",
+  "author": "Koompi <info@koompi.com>",
   "description": "Master Mouse Adventure Game",
   "dependencies": {
     "@google/genai": "^1.35.0",
@@ -37,19 +38,34 @@
   },
   "build": {
     "appId": "com.koompi.mastermouse",
-    "productName": "Master Mouse Adventure",
+    "productName": "master-mouse-adventure",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
       "electron/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      }
+    ],
+    "icon": "build/icon.png",
     "linux": {
       "target": [
-        "AppImage"
-      ]
+        "AppImage",
+        "pacman"
+      ],
+      "category": "Game",
+      "icon": "build/icon.png"
+    },
+    "pacman": {
+      "depends": [],
+      "artifactName": "${productName}-${version}.pkg.tar.zst"
     },
     "win": {
       "target": [
