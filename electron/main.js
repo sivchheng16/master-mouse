@@ -1,14 +1,13 @@
-import { app, BrowserWindow } from 'electron';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Helper for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow() {
+    const iconPath = isDev
+        ? path.join(__dirname, '../public/master-mouse-logo.png')
+        : path.join(__dirname, '../dist/master-mouse-logo.png');
+
     const mainWindow = new BrowserWindow({
         width: 1280,
         height: 800,
@@ -17,7 +16,8 @@ function createWindow() {
             nodeIntegration: false,
             contextIsolation: true,
         },
-        title: "Master Mouse Adventure",
+        title: "Master Mouse",
+        icon: iconPath,
         autoHideMenuBar: true,
     });
 

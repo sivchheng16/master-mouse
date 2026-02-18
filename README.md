@@ -1,5 +1,5 @@
 
-# Master Mouse Adventure
+# Master Mouse
 
 <!-- <div align="center">
   <img src="public/wall-lamp-v3.png" alt="Master Mouse Adventure Banner" width="100%" />

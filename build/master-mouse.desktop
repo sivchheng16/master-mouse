@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Master Mouse
+Comment=Master Mouse Game
+Exec="/opt/Master Mouse/master-mouse" %U
+Terminal=false
+Type=Application
+Icon=master-mouse-adventure
+StartupWMClass=Master Mouse
+Categories=Game;Education;

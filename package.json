@@ -1,8 +1,7 @@
 {
-  "name": "master-mouse-adventure",
+  "name": "master-mouse",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,7 +12,7 @@
   },
   "main": "electron/main.js",
   "author": "Koompi <info@koompi.com>",
-  "description": "Master Mouse Adventure Game",
+  "description": "Master Mouse Game",
   "dependencies": {
     "@google/genai": "^1.35.0",
     "react": "^19.2.3",
@@ -26,7 +25,7 @@
     "autoprefixer": "^10.4.23",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
-    "electron": "^40.0.0",
+    "electron": "^34.0.0",
     "electron-builder": "^26.4.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
@@ -38,7 +37,7 @@
   },
   "build": {
     "appId": "com.koompi.mastermouse",
-    "productName": "master-mouse-adventure",
+    "productName": "master-mouse",
     "directories": {
       "output": "release",
       "buildResources": "build"
@@ -57,8 +56,7 @@
     "icon": "build/icon.png",
     "linux": {
       "target": [
-        "AppImage",
-        "pacman"
+        "AppImage"
       ],
       "category": "Game",
       "icon": "build/icon.png"
