@@ -2,6 +2,10 @@
 # 🎮 Master Mouse Adventure
 
 <div align="center">
+  <img src="public/cover.png" alt="Master Mouse Adventure Cover" width="100%" />
+</div>
+
+<div align="center">
   <img src="public/pwa-512x512.png" alt="Master Mouse Adventure Logo" width="128" />
   <p><em>An interactive educational journey to master computer mouse skills, inspired by the spirit of Cambodia.</em></p>
 </div>
