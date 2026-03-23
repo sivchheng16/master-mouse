@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { audioService } from '../../services/audioService';
-import { GameHUD } from '../GameHUD';
+import React, { useState, useEffect, useRef } from "react";
+import { audioService } from "../../services/audioService";
+import { languageService } from "../../services/languageService";
+import { GameHUD } from "../GameHUD";
 
-export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+export const WaterRefill: React.FC<{ onComplete: () => void }> = ({
+  onComplete,
+}) => {
   const [fillLevel, setFillLevel] = useState(0); // 0 to 100
   const [isHolding, setIsHolding] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -19,7 +22,7 @@ export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }
       // Play fluid sound every few ticks
       if (Math.random() > 0.7) audioService.playFluid();
 
-      setFillLevel(prev => {
+      setFillLevel((prev) => {
         const next = Math.min(prev + 0.8, 100);
         // We trigger completion once they reach or pass the target line
         if (next >= TARGET_THRESHOLD && !isComplete) {
@@ -57,7 +60,13 @@ export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }
       onTouchEnd={stopFilling}
     >
       <GameHUD
-        instruction={isComplete ? 'ពេញហើយ! ✨' : isHolding ? 'កំពុងបំពេញ...' : 'ចុចម៉ៅឱ្យជាប់ដើម្បីបំពេញទឹក!'}
+        instruction={
+          isComplete
+            ? "ពេញហើយ! ✨"
+            : isHolding
+              ? "កំពុងបំពេញ..."
+              : "ចុចម៉ៅឱ្យជាប់ដើម្បីបំពេញទឹក!"
+        }
         progress={fillLevel}
       />
 
@@ -76,7 +85,6 @@ export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }
       <div className="relative w-48 h-72 md:w-64 md:h-96 mt-20">
         {/* The Glass Container */}
         <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px] rounded-[3rem] border-[6px] border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.1),inset_0_4px_20px_rgba(255,255,255,0.8)] overflow-hidden z-10">
-
           {/* Refraction/Highlights on Glass */}
           <div className="absolute left-4 top-10 bottom-10 w-2 bg-white/30 rounded-full blur-[2px]" />
           <div className="absolute right-6 top-20 bottom-20 w-1 bg-white/20 rounded-full blur-[1px]" />
@@ -88,8 +96,15 @@ export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }
           >
             {/* Wave Animation at the Top */}
             <div className="absolute top-0 left-0 w-[200%] h-10 -translate-y-1/2">
-              <svg className="w-full h-full animate-[wave_3s_linear_infinite]" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <path d="M0 10 Q 25 20 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z" fill="rgba(255,255,255,0.4)" />
+              <svg
+                className="w-full h-full animate-[wave_3s_linear_infinite]"
+                viewBox="0 0 100 20"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 10 Q 25 20 50 10 T 100 10 T 150 10 T 200 10 V 20 H 0 Z"
+                  fill="rgba(255,255,255,0.4)"
+                />
               </svg>
             </div>
 
@@ -97,20 +112,21 @@ export const WaterRefill: React.FC<{ onComplete: () => void }> = ({ onComplete }
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
             {/* Bubbles */}
-            {(isHolding || isComplete) && Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute bg-white/30 rounded-full animate-float-up"
-                style={{
-                  width: `${Math.random() * 8 + 4}px`,
-                  height: `${Math.random() * 8 + 4}px`,
-                  left: `${Math.random() * 90}%`,
-                  bottom: `-${Math.random() * 20}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${Math.random() * 2 + 1}s`
-                }}
-              />
-            ))}
+            {(isHolding || isComplete) &&
+              Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute bg-white/30 rounded-full animate-float-up"
+                  style={{
+                    width: `${Math.random() * 8 + 4}px`,
+                    height: `${Math.random() * 8 + 4}px`,
+                    left: `${Math.random() * 90}%`,
+                    bottom: `-${Math.random() * 20}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${Math.random() * 2 + 1}s`,
+                  }}
+                />
+              ))}
           </div>
 
           {/* Target Line - More distinct */}

@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { audioService } from '../../services/audioService';
-import { GameHUD } from '../GameHUD';
+import React, { useState, useEffect } from "react";
+import { audioService } from "../../services/audioService";
+import { languageService } from "../../services/languageService";
+import { GameHUD } from "../GameHUD";
 
-const EMOJIS = ['🦊', '🐰', '🦉', '🐻', '🐹', '🐧', '🦁', '🐯', '🦒', '🐘'];
+const EMOJIS = ["🦊", "🐰", "🦉", "🐻", "🐹", "🐧", "🦁", "🐯", "🦒", "🐘"];
 
-export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = ({ onComplete, count = 3 }) => {
+export const Spotlight: React.FC<{
+  onComplete: () => void;
+  count?: number;
+}> = ({ onComplete, count = 3 }) => {
   const [found, setFound] = useState<number[]>([]);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-  const [targets, setTargets] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
+  const [targets, setTargets] = useState<
+    { id: number; x: number; y: number; emoji: string }[]
+  >([]);
 
   useEffect(() => {
     const newTargets = Array.from({ length: count }).map((_, i) => ({
       id: i,
       x: Math.random() * 80 + 10,
       y: Math.random() * 70 + 15,
-      emoji: EMOJIS[i % EMOJIS.length]
+      emoji: EMOJIS[i % EMOJIS.length],
     }));
     setTargets(newTargets);
     setFound([]);
@@ -48,7 +54,7 @@ export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = (
       }}
       className="relative w-full h-full bg-gray-950 overflow-hidden cursor-none"
       style={{
-        background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, transparent 40px, rgba(0,0,0,0.98) 100px)`
+        background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, transparent 40px, rgba(0,0,0,0.98) 100px)`,
       }}
     >
       <GameHUD
@@ -56,26 +62,33 @@ export const Spotlight: React.FC<{ onComplete: () => void; count?: number }> = (
         score={found.length}
         goal={count}
       />
-      {targets.map(t => (
+      {targets.map((t) => (
         <button
           key={t.id}
           onMouseDown={(e) => {
             e.stopPropagation();
             handleClick(t.id);
           }}
-          className={`absolute text-5xl md:text-6xl transition-all duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] ${found.includes(t.id) ? 'opacity-100 scale-110' : 'opacity-0 hover:opacity-100'}`}
-          style={{ left: `${t.x}%`, top: `${t.y}%`, transform: 'translate(-50%, -50%)' }}
+          className={`absolute text-5xl md:text-6xl transition-all duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] ${found.includes(t.id) ? "opacity-100 scale-110" : "opacity-0 hover:opacity-100"}`}
+          style={{
+            left: `${t.x}%`,
+            top: `${t.y}%`,
+            transform: "translate(-50%, -50%)",
+          }}
         >
           {t.emoji}
         </button>
       ))}
       <div
         className="absolute w-20 h-20 md:w-24 md:h-24 border-4 border-white/40 rounded-full pointer-events-none shadow-[0_0_50px_rgba(255,255,255,0.2)]"
-        style={{ left: `${mousePos.x}%`, top: `${mousePos.y}%`, transform: 'translate(-50%, -50%)' }}
+        style={{
+          left: `${mousePos.x}%`,
+          top: `${mousePos.y}%`,
+          transform: "translate(-50%, -50%)",
+        }}
       >
         <div className="absolute inset-0 border-2 border-white/10 rounded-full animate-ping" />
       </div>
-
     </div>
   );
 };

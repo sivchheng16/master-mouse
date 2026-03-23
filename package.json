@@ -1,13 +1,13 @@
 {
   "name": "master-mouse",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && electron-builder && mkdir -p download && cp release/*.AppImage download",
     "preview": "vite preview",
     "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "electron:build": "vite build && electron-builder",
+    "electron:build": "vite build && electron-builder && mkdir -p download && cp release/*.AppImage download",
     "electron:start": "electron ."
   },
   "main": "electron/main.js",

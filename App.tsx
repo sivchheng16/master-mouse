@@ -24,7 +24,18 @@ const LEVELS_PER_CHAPTER = 30;
 const TOTAL_LEVELS = 30;
 
 const CHAPTER_THEMES = [
-  { nameKey: "game.click", objectiveKey: "game.click_objective", color: "bg-[#58cc02]", border: "border-[#46a302]", accent: "bg-[#46a302]", text: "text-[#58cc02]" },
+  {
+    nameKey: "game.click",
+    objectiveKey: "game.click_objective",
+    descriptionKey: "game.click_description",
+    description: "game.description",
+    how_to_play: "game.how_to_play",
+    guideKey: "game.click_guide",
+    color: "bg-[#58cc02]",
+    border: "border-[#46a302]",
+    accent: "bg-[#46a302]",
+    text: "text-[#58cc02]"
+  },
 ];
 
 const ACTIVE_GAME_TYPES = [
@@ -67,6 +78,10 @@ const App: React.FC = () => {
   const [showRanking, setShowRanking] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const progressCardRef = useRef<HTMLDivElement>(null);
+  const [language, setLanguage] = useState<"km" | "en">(
+    (languageService.getLanguage() as "km" | "en") || "km",
+  );
+  const [lang, setLang] = useState(languageService.getLanguage());
 
   // Force re-render on language change
   const [, setTick] = useState(0);
@@ -87,6 +102,9 @@ const App: React.FC = () => {
     // Subscribe to language changes
     const unsubscribe = languageService.subscribe(() => {
       setTick(t => t + 1);
+      const newLang = languageService.getLanguage();
+      setLanguage(newLang as "km" | "en");
+      setLang(newLang);
       setMessage(languageService.t('dialog.ready_msg'));
     });
 
@@ -234,6 +252,11 @@ const App: React.FC = () => {
     return !completedLevels.has(lvl - 1);
   };
 
+  const handleLanguageClick = () => {
+    audioService.playHover();
+    languageService.toggleLanguage();
+  };
+
   const renderGame = () => {
     if (showTutorial) return (
       <Tutorial
@@ -335,6 +358,25 @@ const App: React.FC = () => {
           <SidebarItem icon="👤" label={languageService.t('sidebar.account')} active={showAccount} onClick={() => { setShowAccount(true); setShowRanking(false); setShowAbout(false); }} />
           <SidebarItem icon="ℹ️" label={languageService.t('sidebar.about')} active={showAbout} onClick={() => { setShowAbout(true); setShowAccount(false); setShowRanking(false); }} />
           <SidebarItem icon="⚙️" label={languageService.t('sidebar.settings')} onClick={() => setShowResetConfirm(true)} />
+          {/* Language Switch Button */}
+          {/* <button
+            onClick={() => languageService.toggleLanguage()}
+            className="pointer-events-auto self-start ml-2 sm:ml-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-full text-xs sm:text-sm shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
+            title={language === "km" ? "Switch to English" : "ប្តូរទៅខ្មែរ"}
+          >
+            {language === "km" ? "🇬🇧 EN" : "🇰🇭 KM"}
+          </button> */}
+          <button
+            onClick={handleLanguageClick}
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold uppercase transition-all duration-200 border-2 bg-transparent border-transparent text-[#777] hover:bg-[#f7f7f7] group active:scale-95"
+          >
+            <span className="text-2xl transition-transform group-hover:scale-110">{lang === 'km' ? '🇰🇭' : '🇺🇸'}</span>
+            <div className="hidden lg:flex items-center gap-3">
+              <span className="text-sm tracking-wider">{lang === 'km' ? 'ភាសាខ្មែរ' : 'ENGLISH'}</span>
+              <div className="w-[1px] h-3 bg-slate-300" />
+              <span className="text-[10px] opacity-60 font-black">{lang === 'km' ? 'KM' : 'EN'}</span>
+            </div>
+          </button>
         </nav>
         <div className="mt-auto border-t-2 border-[#e5e5e5] pt-3 px-1">
           <div className="flex items-center gap-3 bg-[#f7f7f7] px-3 py-2 rounded-2xl border-2 border-[#e5e5e5] group cursor-default">
@@ -353,12 +395,47 @@ const App: React.FC = () => {
           <div className="w-full max-w-2xl py-12 px-4 animate-in fade-in duration-700">
             {CHAPTER_THEMES.map((chapter, chapterIdx) => (
               <section key={chapterIdx} className="mb-20">
-                <div className={`sticky top-6 z-40 w-full rounded-3xl p-5 mb-16 text-white shadow-lg transition-all duration-300 ${chapter.color}`}>
-                  <div className="flex justify-between items-center gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-black text-base md:text-lg uppercase tracking-[0.2em] opacity-80 mb-1">{languageService.t('chapter.chapter_prefix')} {chapterIdx + 1}</h3>
-                      <h2 className="title-font text-2xl md:text-3xl leading-tight mb-1">{languageService.t(chapter.nameKey)}</h2>
-                      <p className="font-bold text-white/90 text-xs md:text-sm">{languageService.t(chapter.objectiveKey)}</p>
+                <div className={`sticky top-6 z-40 w-full rounded-[1.5rem] p-4 mb-8 text-white shadow-xl transition-all duration-300 ${chapter.color} border-b-6 ${chapter.border} overflow-hidden group`}>
+                  <div className="relative flex items-center gap-6 z-20">
+                    {/* Left: Chapter & Title */}
+                    {/* <div className="shrink-0 flex flex-col justify-center border-r-2 border-white/20 pr-6 min-w-[120px]">
+                      <h3 className="font-black text-[10px] uppercase tracking-[0.3em] opacity-80 leading-none mb-1">
+                        {languageService.t('chapter.chapter_prefix')} {chapterIdx + 1}
+                      </h3>
+                      <h2 className="title-font text-3xl font-black leading-none tracking-tighter drop-shadow-sm">
+                        {languageService.t(chapter.nameKey)}
+                      </h2>
+                    </div> */}
+
+                    {/* Middle: Content */}
+                    <div className="flex-1 hidden md:grid grid-cols-2 gap-3 items-center">
+                      <div className="bg-black/10 rounded-xl p-3 border border-white/5 h-full flex flex-col justify-center">
+                        <h4 className="text-[9px] font-black uppercase tracking-[0.1em] opacity-60 mb-0.5">{languageService.t(chapter.description)}</h4>
+                        <p className="text-[12px] font-bold leading-tight text-white drop-shadow-sm">
+                          {languageService.t(chapter.descriptionKey)}
+                        </p>
+                      </div>
+
+                      <div className="bg-black/20 rounded-xl p-3 border border-white/10 h-full flex flex-col justify-center">
+                        <h4 className="text-[9px] font-black uppercase tracking-[0.1em] opacity-60 mb-0.5">{languageService.t(chapter.how_to_play)}</h4>
+                        {/* <div className="flex items-center gap-2"> */}
+                        <p className="text-[12px] font-bold leading-tight text-white drop-shadow-sm">
+                          {languageService.t(chapter.guideKey)}
+                        </p>
+                        {/* </div> */}
+                      </div>
+                    </div>
+
+                    {/* Mobile Content (Visible only on small screens) */}
+                    <div className="flex-1 md:hidden overflow-hidden">
+                      <p className="text-[12px] font-black italic leading-tight truncate">
+                        {languageService.t(chapter.guideKey)}
+                      </p>
+                    </div>
+
+                    {/* Right: Icon */}
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-4xl md:text-5xl shadow-lg group-hover:rotate-12 transition-transform duration-300 grow-0 shrink-0 self-center">
+                      {chapterIdx === 0 ? '🖱️' : '🐭'}
                     </div>
                   </div>
                 </div>
@@ -379,7 +456,7 @@ const App: React.FC = () => {
                         style={{ marginLeft: `${windingOffset}px` }}
                       >
                         {/* Tooltip */}
-                        <div className={`absolute bottom-full mb-4 transition-all duration-300 pointer-events-none scale-90 group-hover:scale-100 z-30 ${isActive ? 'opacity-100 scale-100 animate-float-level-tiny' : 'opacity-0 group-hover:opacity-100 '}`}>
+                        <div className={`absolute bottom-full mb-4 transition-all duration-300 pointer-events-none scale-90 group-hover:scale-100 z-30 ${isActive ? 'opacity-100 scale-100 animate-float-level-tiny z-41' : 'opacity-0 group-hover:opacity-100'}`}>
                           <div className="bg-[#4b4b4b] text-white px-5 py-3 rounded-2xl text-xs font-black uppercase whitespace-nowrap shadow-2xl border-2 border-white/10">
                             {languageService.t('ranking.lesson_prefix')} {lvlNum}
                             <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[10px] border-x-transparent border-t-[10px] border-t-[#4b4b4b]" />

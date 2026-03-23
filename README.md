@@ -1,83 +1,114 @@
 
-# Master Mouse
+# 🎮 Master Mouse Adventure
 
-<!-- <div align="center">
-  <img src="public/wall-lamp-v3.png" alt="Master Mouse Adventure Banner" width="100%" />
-</div> -->
+<div align="center">
+  <img src="public/pwa-512x512.png" alt="Master Mouse Adventure Logo" width="128" />
+  <p><em>An interactive educational journey to master computer mouse skills, inspired by the spirit of Cambodia.</em></p>
+</div>
 
-## 🎮 About The Game
+---
 
-**Master Mouse Adventure** is an interactive educational game designed to help children master computer mouse skills. Through a series of fun, Cambodian-themed mini-games, players will learn:
+## 🌟 Overview
 
-- **Clicking** (Balloon Pop, Fruit Chop)
-- **Hovering** (Magic Garden, Flashlight)
-- **Dragging & Dropping** (Toy Sorter, Temple Builder)
-- **Scrolling** (Deep Sea Scroll)
-- **Tracing** (Shape Tracing, Khmer Letters)
+**Master Mouse Adventure** is a premium educational game designed specifically for children to build essential digital literacy skills through engaging, Cambodian-themed mini-games. From clicking and dragging to complex tracing and scrolling, players advance through a vibrant world while mastering the most fundamental tool of computing.
 
-The game features **100+ levels** across different thematic chapters, from the "Happy Grass Garden" to the "Ice Mountain", keeping kids engaged while they build essential digital literacy skills.
+## ✨ Core Learning Path
 
-## ✨ Features
+The game is structured into thematic chapters, each focusing on specific mouse interactions:
 
-- **Cambodian Theme**: Includes games like _Tuk Tuk Driver_, _Khmer Letter Tracing_, _Rice Planting_, _Angkor Temple Builder_, and more.
-- **Progress Tracking**: Validates skills and unlocks new levels as the player progresses.
-- **Offline Ready**: Fully functional without an internet connection.
-- **PWA Support**: Can be installed as an App on your device.
-- **Engaging Visuals**: Bright colors, animations, and sound effects to encourage learning.
+- **🖱️ Clicking**: Master single clicks with "Balloon Pop" and precision slicing in "Fruit Chop".
+- **🎯 Hovering**: Develop spatial awareness and accuracy in "Magic Garden" and "Flashlight".
+- **🖐️ Dragging & Dropping**: Build coordination by sorting items in "Toy Sorter" or building "Angkor Temples".
+- **📜 Scrolling**: Navigate depths in "Deep Sea Scroll" to master vertical movement.
+- **✍️ Tracing**: Learn fluid motion with "Shape Tracing" and "Khmer Letter" writing.
+- **🕹️ Specialized Skills**: Includes Right-Clicking, Scroll Wheel Resizing, Maze Navigation, and more.
 
-## 🚀 How to Run
+## 🇰🇭 Cambodian Themed Adventures
 
-### Online (Web)
-Visit our official link: [coming soon]
+We've integrated local culture into every level to make learning relatable and fun:
+- **Rice Planting (ដាំស្រូវ)**: Drag and drop rice seedlings in the field.
+- **Khmer Letter Tracing (គូរអក្សរខ្មែរ)**: Practice writing the beautiful Khmer alphabet.
+- **Angkor Temple Builder (សង់ប្រាសាទអង្គរ)**: Construct iconic architectural wonders.
+- **Tuk Tuk Driver (តុកតុក)**: Navigate the busy streets of Cambodia.
+- **Water Splash (សង្ក្រាន្ដ)**: Celebrate the Khmer New Year with interactive water games.
+- **Apsara Coloring (ផាត់ពណ៌អប្សរា)**: Express creativity on traditional motifs.
 
-### Locally (Developers)
+## 🛠️ Technical Stack
+
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite 6](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
+- **Desktop**: [Electron 34](https://www.electronjs.org/)
+- **AI Integration**: [Google Gemini AI](https://ai.google.dev/)
+- **Offline/PWA**: [Vite PWA Plugin](https://vite-pwa-org.netlify.app/)
+
+## 🌍 Language Support (i18n)
+
+The game is fully localized to support:
+- 🇰🇭 **Khmer (ភាសាខ្មែរ)**
+- 🇺🇸 **English**
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+)
+- [npm](https://www.npmjs.com/) or [bun](https://bun.sh/)
+
+### Installation
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/koompi/master-mouse.git
+    git clone https://github.com/sivchheng16/master-mouse.git
     cd master-mouse
     ```
 
 2.  **Install dependencies**
     ```bash
-    # using bun
-    bun install
-    
-    # OR using npm
     npm install
+    # or
+    bun install
     ```
 
-3.  **Start the development server**
-    ```bash
-    # using bun
-    bun run dev
+### Development
 
-    # OR using npm
-    npm run dev
-    ```
+Run the web application locally:
+```bash
+npm run dev
+```
 
-4.  **Build for production**
-    ```bash
-    npm run build
-    ```
+Run the Electron desktop app in development:
+```bash
+npm run electron:dev
+```
 
-## 📦 Build Desktop App (Electron)
+### Production Build
 
-To build the standalone desktop application (AppImage/Deb/Win):
+Build for web (outputs to `dist/`):
+```bash
+npm run build
+```
 
+Build standalone desktop binaries (outputs to `release/`):
 ```bash
 npm run electron:build
 ```
 
-The output files will be in the `release/` folder.
+## 📦 Distribution
+
+- **Web**: Deployable to any static hosting (GitHub Pages, Vercel, etc.).
+- **Desktop**: Supports Linux (AppImage) and Windows (NSIS).
+- **PWA**: Installable directly from compatible browsers for offline play.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please feel free to open issues or submit pull requests.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
+
 Built with ❤️ by [KOOMPI](https://koompi.com)
